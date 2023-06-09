@@ -1,0 +1,36 @@
+GET https://mamyklocga.przemyslawpitus.pl:48207/socket.io/?EIO=3&transport=polling&t=1686237611232-1&sid=2c522855-3b2e-476e-8ed5-e7e04801da54
+
+### Hello
+POST http://localhost:24003/users/hello
+Content-Type: application/json
+Accept: application/json
+
+{
+  "clientSessionId": "d06bc845-350a-411d-a778-e9cc51442095"
+}
+
+### Create room
+POST http://localhost:24003/rooms
+Content-Type: application/json
+Accept: application/json
+
+{
+  "roomName": "nazwa",
+  "username": "Deko"
+}
+
+> {% client.global.set("roomId", response.body.roomId) %}
+
+### Join room
+POST http://localhost:24003/rooms/{{roomId}}/join
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "Gram"
+}
+
+### Start game
+POST http://localhost:24003/rooms/{{roomId}}/start
+Content-Type: application/json
+Accept: application/json

@@ -1,0 +1,13 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+
+server:
+  port: 24003
+
+socket-io:
+  port: 48207
+  keyStoreResourcePath: "/cert.jks"
+  keyStorePassword: "test1234"
