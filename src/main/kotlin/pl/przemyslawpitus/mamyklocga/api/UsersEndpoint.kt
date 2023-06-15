@@ -24,14 +24,12 @@ class UserEndpoint(
     @PostMapping("/hello")
     fun hello(
         @CookieValue userId: String?,
-        @RequestBody request: HelloRequest,
         response: HttpServletResponse,
     ): ResponseEntity<*> {
         logger.info("Hello, userId: $userId")
 
         val result = helloUseCase.getOrCreateUser(
             userId = userId,
-            clientSessionId = UUID.fromString(request.clientSessionId),
         )
 
         val userIdCookie = createUserIdCookie(userId = result.user.userId)
@@ -56,13 +54,13 @@ class UserEndpoint(
     }
 }
 
-data class HelloRequest(
-    val clientSessionId: String,
-)
-
 data class UserResponse(
+    val userId: String,
     val username: String?,
 )
 
-private fun User.toResponse() = UserResponse(username = this.username)
+private fun User.toResponse() = UserResponse(
+    userId = this.userId.value,
+    username = this.username,
+)
 

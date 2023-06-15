@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration
 import pl.przemyslawpitus.mamyklocga.domain.UserRepository
 import pl.przemyslawpitus.mamyklocga.domain.createRoomUseCase.CreateRoomUseCase
 import pl.przemyslawpitus.mamyklocga.domain.RoomRepository
+import pl.przemyslawpitus.mamyklocga.domain.bindSessionToUserUseCase.BindSessionToUserUseCase
+import pl.przemyslawpitus.mamyklocga.domain.bindSessionToUserUseCase.UserSessionBinder
 import pl.przemyslawpitus.mamyklocga.domain.game.ChallengeProvider
 import pl.przemyslawpitus.mamyklocga.domain.getRoomsUseCase.GetRoomsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.helloUseCase.HelloUseCase
@@ -20,6 +22,7 @@ import pl.przemyslawpitus.mamyklocga.infrastructure.sockets.SocketIoGameStatusPu
 import pl.przemyslawpitus.mamyklocga.infrastructure.sockets.SocketIoServer
 
 @Configuration
+@Suppress("TooManyFunctions")
 class DomainConfig {
     @Bean
     fun userRepository() = InMemoryUserRepository()
@@ -105,7 +108,7 @@ class DomainConfig {
 
     @Bean
     fun gameCreator(
-        challengeProvider: ChallengeProvider
+        challengeProvider: ChallengeProvider,
     ) = GameCreator(
         challengeProvider = challengeProvider,
     )
@@ -115,5 +118,18 @@ class DomainConfig {
         socketIoServer: SocketIoServer,
     ) = SocketIoGameStatusPublisher(
         socketIoServer = socketIoServer,
+    )
+
+    @Bean
+    fun bindSessionToUserUseCase(
+        userRepository: UserRepository,
+        roomRepository: RoomRepository,
+        userSessionBinder: UserSessionBinder,
+        gameStatusPublisher: GameStatusPublisher,
+    ) = BindSessionToUserUseCase(
+        userRepository = userRepository,
+        roomRepository = roomRepository,
+        userSessionBinder = userSessionBinder,
+        gameStatusPublisher = gameStatusPublisher,
     )
 }

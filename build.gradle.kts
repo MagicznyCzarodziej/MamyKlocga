@@ -18,9 +18,10 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.corundumstudio.socketio:netty-socketio:1.7.19")
+    implementation("com.corundumstudio.socketio:netty-socketio:2.0.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

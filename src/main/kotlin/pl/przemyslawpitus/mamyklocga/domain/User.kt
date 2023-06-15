@@ -16,5 +16,10 @@ data class User(
 value class UserId(val value: String)
 
 data class Session(
-    val clientSessionId: UUID,
+    val sessionId: SessionId,
 )
+
+@JvmInline
+value class SessionId(val value: String) {
+    fun asUUID() = UUID.fromString(this.value)
+}

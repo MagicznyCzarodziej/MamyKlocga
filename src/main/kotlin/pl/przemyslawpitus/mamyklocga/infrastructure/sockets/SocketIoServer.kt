@@ -1,60 +1,44 @@
 package pl.przemyslawpitus.mamyklocga.infrastructure.sockets
 
 import com.corundumstudio.socketio.Configuration
-import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.SocketIOServer
-import com.corundumstudio.socketio.annotation.OnConnect
 import com.corundumstudio.socketio.protocol.JacksonJsonSupport
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import jakarta.annotation.PreDestroy
+import org.springframework.core.env.Environment
 import org.springframework.core.io.ClassPathResource
 import pl.przemyslawpitus.mamyklocga.WithLogger
 import pl.przemyslawpitus.mamyklocga.config.SocketIoProperties
 import pl.przemyslawpitus.mamyklocga.domain.RoomId
+import pl.przemyslawpitus.mamyklocga.domain.SessionId
 import pl.przemyslawpitus.mamyklocga.domain.User
-import pl.przemyslawpitus.mamyklocga.domain.UserRepository
-import kotlin.reflect.KClass
+import pl.przemyslawpitus.mamyklocga.domain.UserId
+import pl.przemyslawpitus.mamyklocga.domain.bindSessionToUserUseCase.UserSessionBinder
+import java.net.BindException
 
 class SocketIoServer(
-    socketIoProperties: SocketIoProperties,
-    private val userRepository: UserRepository,
-) {
+    private val socketIoProperties: SocketIoProperties,
+    private val environment: Environment
+) : UserSessionBinder {
     private var server: SocketIOServer;
 
     init {
         val config = Configuration()
         config.port = socketIoProperties.port
-        config.keyStore = ClassPathResource(socketIoProperties.keyStoreResourcePath).inputStream
-        config.keyStorePassword = socketIoProperties.keyStorePassword
         config.jsonSupport = JacksonJsonSupport(kotlinModule())
         config.isRandomSession = true // Treat every browser tab as different client
 
+        if (shouldUseHttps()) {
+            config.keyStore = ClassPathResource(socketIoProperties.keyStoreResourcePath!!).inputStream
+            config.keyStorePassword = socketIoProperties.keyStorePassword!!
+        }
+
         server = SocketIOServer(config)
 
-        server.start()
-    }
-
-    fun <T : Any> listenFor(
-        eventName: String,
-        payloadClass: KClass<T>,
-        handler: (user: User, payload: T) -> Unit
-    ) {
-        server.addEventListener(
-            eventName,
-            payloadClass.java
-        ) { client, data, ackRequest ->
-            val user = userRepository.getUserByClientSessionId(clientSessionId = client.sessionId)
-
-            if (user == null) {
-                logger.warn(
-                    "Received event [$eventName] from unregistered user" +
-                        " with clientSessionId: [${client.sessionId}]. Payload: $data"
-                )
-                handleUserNotFound(client = client)
-            } else {
-                logger.info("Received event [$eventName] from user with id [${user.userId.value}]. Payload: $data")
-                handler(user, data)
-            }
+        try {
+            server.start()
+        } catch (exception: BindException) {
+            logger.error("Cannot start SocketIO Server", exception)
         }
     }
 
@@ -63,7 +47,7 @@ class SocketIoServer(
             throw RuntimeException("User has no active socket-io session")
         }
 
-        server.getClient(user.session.clientSessionId).joinRoom(roomId.value)
+        server.getClient(user.session.sessionId.asUUID()).joinRoom(roomId.value)
 
         logger.info("User ${user.userId.value} joined socket-io room for room ${roomId.value}")
     }
@@ -73,7 +57,7 @@ class SocketIoServer(
             throw RuntimeException("User has no active socket-io session")
         }
 
-        server.getClient(user.session.clientSessionId).leaveRoom(roomId.value)
+        server.getClient(user.session.sessionId.asUUID()).leaveRoom(roomId.value)
 
         logger.info("User ${user.userId.value} left socket-io room for room ${roomId.value}")
     }
@@ -84,16 +68,20 @@ class SocketIoServer(
         logger.info("Sent event ${event.name} to room ${roomId.value}")
     }
 
-    fun <T> sendToAll(event: Event<T>) {
-        server.broadcastOperations.sendEvent(event.name, event.payload)
+    override fun bindSessionIdToUser(handler: (userId: UserId, sessionId: SessionId) -> Unit) {
+        server.addConnectListener { client ->
+            val sessionId = SessionId(client.sessionId.toString())
+            val userId = client.handshakeData.getSingleUrlParam("userId")?.let { UserId(it) }
+                ?: throw RuntimeException("No userId passed on socket connection, sessionId: ${sessionId.value}")
+
+            logger.info("Socket connected, userId: ${userId.value}, sessionId: ${sessionId.value}")
+
+            handler(userId, sessionId)
+        }
     }
 
-    fun <T> sendToUser(user: User, event: Event<T>) {
-        server.getClient(user.session!!.clientSessionId).sendEvent(event.name, event.payload) // TODO: Remove "!!"
-    }
-
-    private fun handleUserNotFound(client: SocketIOClient) {
-        client.sendEvent("ERROR", "User not found") // TODO: Use classes
+    private fun shouldUseHttps(): Boolean {
+        return ("prod" in environment.activeProfiles)
     }
 
     @PreDestroy

@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+ @apply h-full
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}

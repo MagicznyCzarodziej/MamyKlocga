@@ -1,0 +1,11 @@
+server:
+  port: 24003
+  ssl.key-store: classpath:cert.jks
+  ssl.key-store-type: pkcs12
+  ssl.key-store-password: test1234
+  ssl.key-password: test1234
+
+socket-io:
+  port: 48207
+  keyStoreResourcePath: "/cert.jks"
+  keyStorePassword: "test1234"
