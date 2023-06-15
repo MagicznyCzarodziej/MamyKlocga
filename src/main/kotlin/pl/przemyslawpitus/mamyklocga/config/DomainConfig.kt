@@ -55,13 +55,11 @@ class DomainConfig {
     fun createRoomUseCase(
         roomRepository: RoomRepository,
         userRepository: UserRepository,
-        setUsernameUseCase: SetUsernameUseCase,
         leaveRoomUseCase: LeaveRoomUseCase,
         gameStatusPublisher: GameStatusPublisher,
     ) = CreateRoomUseCase(
         roomRepository = roomRepository,
         userRepository = userRepository,
-        setUsernameUseCase = setUsernameUseCase,
         leaveRoomUseCase = leaveRoomUseCase,
         gameStatusPublisher = gameStatusPublisher,
     )
@@ -70,13 +68,11 @@ class DomainConfig {
     fun joinRoomUseCase(
         roomRepository: RoomRepository,
         userRepository: UserRepository,
-        setUsernameUseCase: SetUsernameUseCase,
         leaveRoomUseCase: LeaveRoomUseCase,
         gameStatusPublisher: GameStatusPublisher,
     ) = JoinRoomUseCase(
         roomRepository = roomRepository,
         userRepository = userRepository,
-        setUsernameUseCase = setUsernameUseCase,
         leaveRoomUseCase = leaveRoomUseCase,
         gameStatusPublisher = gameStatusPublisher,
     )

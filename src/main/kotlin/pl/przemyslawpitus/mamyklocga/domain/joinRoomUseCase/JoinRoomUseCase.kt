@@ -8,21 +8,18 @@ import pl.przemyslawpitus.mamyklocga.domain.UserRepository
 import pl.przemyslawpitus.mamyklocga.domain.Room
 import pl.przemyslawpitus.mamyklocga.domain.RoomId
 import pl.przemyslawpitus.mamyklocga.domain.leaveRoomUseCase.LeaveRoomUseCase
-import pl.przemyslawpitus.mamyklocga.domain.setUsernameUseCase.SetUsernameUseCase
 import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.GameStatusPublisher
 import java.time.Instant
 
 class JoinRoomUseCase(
     private val roomRepository: RoomRepository,
     private val userRepository: UserRepository,
-    private val setUsernameUseCase: SetUsernameUseCase,
     private val leaveRoomUseCase: LeaveRoomUseCase,
     private val gameStatusPublisher: GameStatusPublisher,
 ) {
     fun joinRoom(
         roomId: RoomId,
         userId: UserId,
-        username: String,
     ) {
         val user = userRepository.getByUserId(userId)
         if (user == null) throw RuntimeException("User not found") // TODO
@@ -30,18 +27,16 @@ class JoinRoomUseCase(
         val room = roomRepository.getByRoomId(roomId = roomId)
         if (room == null) throw RuntimeException("Room not found") // TODO
 
-        val updatedUser = setUsernameUseCase.setUsername(user, username)
+        leaveRoomUseCase.leaveAllRooms(user)
 
-        leaveRoomUseCase.leaveAllRooms(updatedUser)
-
-        val updatedRoom = room.addUser(updatedUser)
+        val updatedRoom = room.addUser(user)
         gameStatusPublisher.joinRoom(
             roomId = updatedRoom.roomId,
-            user = updatedUser,
+            user = user,
         )
         roomRepository.saveRoom(room = updatedRoom)
 
-        logger.info("User ${updatedUser.userId} joined room ${room.roomId.value}")
+        logger.info("User ${user.userId} joined room ${room.roomId.value}")
     }
 
     private companion object : WithLogger()

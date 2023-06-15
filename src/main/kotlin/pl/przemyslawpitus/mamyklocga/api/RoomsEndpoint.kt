@@ -43,7 +43,6 @@ class RoomsEndpoint(
         val room = createRoomUseCase.createRoom(
             roomName = request.roomName,
             ownerUserId = UserId(userId),
-            username = request.username,
         )
         return ResponseEntity.status(HttpStatus.CREATED).body(room.toRoomCreatedResponse())
     }
@@ -58,7 +57,6 @@ class RoomsEndpoint(
         joinRoomUseCase.joinRoom(
             roomId = RoomId(roomId),
             userId = UserId(userId),
-            username = request.username,
         )
 
         return ResponseEntity.ok().body(Unit)
@@ -69,7 +67,6 @@ class RoomsEndpoint(
 
 data class CreateRoomRequest(
     val roomName: String,
-    val username: String,
 )
 
 data class RoomCreatedResponse(
@@ -84,9 +81,7 @@ private fun Room.toRoomCreatedResponse() = RoomCreatedResponse(
     name = this.name,
 )
 
-data class JoinRoomRequest(
-    val username: String,
-)
+class JoinRoomRequest()
 
 data class RoomsResponse(
     val rooms: List<RoomResponse>,

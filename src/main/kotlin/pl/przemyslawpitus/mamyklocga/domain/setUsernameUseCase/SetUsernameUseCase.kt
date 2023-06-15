@@ -2,6 +2,7 @@ package pl.przemyslawpitus.mamyklocga.domain.setUsernameUseCase
 
 import pl.przemyslawpitus.mamyklocga.WithLogger
 import pl.przemyslawpitus.mamyklocga.domain.User
+import pl.przemyslawpitus.mamyklocga.domain.UserId
 import pl.przemyslawpitus.mamyklocga.domain.UserRepository
 import java.time.Instant
 
@@ -12,7 +13,10 @@ class SetUsernameUseCase(
     private val userRepository: UserRepository,
 ) {
 
-    fun setUsername(user: User, username: String): User {
+    fun setUsername(userId: UserId, username: String): User {
+        val user = userRepository.getByUserId(userId)
+        if (user == null) throw RuntimeException("User with id ${userId.value} not found")
+
         val cleanedUsername = cleanUsername(username) // TODO Improve this
         validateUsername(cleanedUsername)
 
@@ -20,7 +24,7 @@ class SetUsernameUseCase(
 
         return userRepository
             .saveUser(updatedUser)
-            .also { logger.info("Set user ${it.userId.value} username: ${it.username}") }
+            .also { logger.info("User ${it.userId.value} username was set to: ${it.username}") }
     }
 
     private fun cleanUsername(username: String) = username.filter { it.isLetterOrDigit() }

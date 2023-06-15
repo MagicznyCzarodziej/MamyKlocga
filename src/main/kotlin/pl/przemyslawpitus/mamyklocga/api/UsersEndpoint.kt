@@ -13,12 +13,14 @@ import pl.przemyslawpitus.mamyklocga.WithLogger
 import pl.przemyslawpitus.mamyklocga.domain.User
 import pl.przemyslawpitus.mamyklocga.domain.UserId
 import pl.przemyslawpitus.mamyklocga.domain.helloUseCase.HelloUseCase
+import pl.przemyslawpitus.mamyklocga.domain.setUsernameUseCase.SetUsernameUseCase
 import java.util.*
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/me")
 class UserEndpoint(
     private val helloUseCase: HelloUseCase,
+    private val setUsernameUseCase: SetUsernameUseCase,
 ) {
 
     @PostMapping("/hello")
@@ -40,6 +42,23 @@ class UserEndpoint(
         return ResponseEntity
             .status(status)
             .body((result.user.toResponse()))
+    }
+
+    @PostMapping("/username")
+    fun setUsername(
+        @CookieValue userId: String,
+        @RequestBody request: SetUsernameRequest,
+    ): ResponseEntity<*> {
+        logger.info("Set username $, userId: $userId")
+
+        val user = setUsernameUseCase.setUsername(
+            userId = UserId(userId),
+            username = request.username
+        )
+
+        return ResponseEntity.ok().body(
+            SetUsernameResponse(username = user.username!!)
+        )
     }
 
     private fun createUserIdCookie(userId: UserId): Cookie {
@@ -64,3 +83,10 @@ private fun User.toResponse() = UserResponse(
     username = this.username,
 )
 
+data class SetUsernameRequest(
+    val username: String,
+)
+
+data class SetUsernameResponse(
+    val username: String,
+)
