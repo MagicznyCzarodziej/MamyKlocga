@@ -9,7 +9,6 @@ import org.springframework.core.env.Environment
 import org.springframework.core.io.ClassPathResource
 import pl.przemyslawpitus.mamyklocga.WithLogger
 import pl.przemyslawpitus.mamyklocga.config.SocketIoProperties
-import pl.przemyslawpitus.mamyklocga.domain.RoomId
 import pl.przemyslawpitus.mamyklocga.domain.SessionId
 import pl.przemyslawpitus.mamyklocga.domain.User
 import pl.przemyslawpitus.mamyklocga.domain.UserId
@@ -42,30 +41,30 @@ class SocketIoServer(
         }
     }
 
-    fun joinRoom(roomId: RoomId, user: User) {
+    fun joinRoom(socketioRoomId: String, user: User) {
         if (user.session == null) {
             throw RuntimeException("User has no active socket-io session")
         }
 
-        server.getClient(user.session.sessionId.asUUID()).joinRoom(roomId.value)
+        server.getClient(user.session.sessionId.asUUID()).joinRoom(socketioRoomId)
 
-        logger.info("User ${user.userId.value} joined socket-io room for room ${roomId.value}")
+        logger.info("User ${user.userId.value} joined socket-io room for room $socketioRoomId")
     }
 
-    fun leaveRoom(roomId: RoomId, user: User) {
+    fun leaveRoom(socketioRoomId: String, user: User) {
         if (user.session == null) {
             throw RuntimeException("User has no active socket-io session")
         }
 
-        server.getClient(user.session.sessionId.asUUID()).leaveRoom(roomId.value)
+        server.getClient(user.session.sessionId.asUUID()).leaveRoom(socketioRoomId)
 
-        logger.info("User ${user.userId.value} left socket-io room for room ${roomId.value}")
+        logger.info("User ${user.userId.value} left socket-io room for room $socketioRoomId")
     }
 
-    fun <T> sendToRoom(roomId: RoomId, event: Event<T>) {
-        server.getRoomOperations(roomId.value)
+    fun <T> sendToRoom(socketioRoomId: String, event: Event<T>) {
+        server.getRoomOperations(socketioRoomId)
             .sendEvent(event.name, event.payload)
-        logger.info("Sent event ${event.name} to room ${roomId.value}")
+        logger.info("Sent event ${event.name} to room $socketioRoomId")
     }
 
     override fun bindSessionIdToUser(handler: (userId: UserId, sessionId: SessionId) -> Unit) {
@@ -74,6 +73,7 @@ class SocketIoServer(
             val userId = client.handshakeData.getSingleUrlParam("userId")?.let { UserId(it) }
                 ?: throw RuntimeException("No userId passed on socket connection, sessionId: ${sessionId.value}")
 
+            client.joinRoom(LOBBY_ROOM)
             logger.info("Socket connected, userId: ${userId.value}, sessionId: ${sessionId.value}")
 
             handler(userId, sessionId)
@@ -91,7 +91,9 @@ class SocketIoServer(
         server.stop()
     }
 
-    private companion object : WithLogger()
+    companion object : WithLogger() {
+        const val LOBBY_ROOM = "LOBBY"
+    }
 }
 
 open class Event<T>(

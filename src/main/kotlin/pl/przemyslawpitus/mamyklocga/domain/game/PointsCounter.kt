@@ -1,36 +1,37 @@
 package pl.przemyslawpitus.mamyklocga.domain.game
 
-import pl.przemyslawpitus.mamyklocga.domain.User
+import pl.przemyslawpitus.mamyklocga.domain.UserId
 
 class PointsCounter {
-    fun countPointsForGame(game: Game): Map<User, Int> {
+    fun countPointsForGame(game: Game): Map<UserId, Int> {
         return game.rounds
             .map { countPointsForRound(it) }
             .flatMap { it.entries }
             .associate { it.toPair() }
+            .withDefault { 0 }
     }
 
-    private fun countPointsForRound(round: Round): Map<User, Int> {
+    private fun countPointsForRound(round: Round): Map<UserId, Int> {
         return round.builds
             .map { countPointsForBuild(it) }
             .flatMap { it.entries }
             .associate { it.toPair() }
     }
 
-    private fun countPointsForBuild(build: Build): Map<User, Int> {
-        val pointsPerUser = mutableMapOf<User, Int>()
+    private fun countPointsForBuild(build: Build): Map<UserId, Int> {
+        val pointsPerUser = mutableMapOf<UserId, Int>()
 
         if (build.correctAnswerBy != null) {
-            pointsPerUser.addPointForUser(build.builder)
-            pointsPerUser.addPointForUser(build.correctAnswerBy)
+            pointsPerUser.addPointForUser(build.builder.userId)
+            pointsPerUser.addPointForUser(build.correctAnswerBy.userId)
         }
 
         if (build.hasPassedChallenge) {
-            pointsPerUser.addPointForUser(build.builder)
+            pointsPerUser.addPointForUser(build.builder.userId)
         }
 
         return pointsPerUser
     }
 
-    private fun MutableMap<User, Int>.addPointForUser(user: User) = this.merge(user, 1, Int::plus)
+    private fun MutableMap<UserId, Int>.addPointForUser(userId: UserId) = this.merge(userId, 1, Int::plus)
 }

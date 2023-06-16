@@ -11,6 +11,9 @@ interface GameStatusPublisher {
     fun guessesUpdate(room: Room)
     fun gameEnded(room: Room)
 
+    fun newRoom(room: Room)
+    fun roomClosed(room: Room)
+
     fun joinRoom(roomId: RoomId, user: User)
     fun leaveRoom(roomId: RoomId, user: User)
 }

@@ -13,7 +13,7 @@ class FrontendController {
     }
 
 //    @RequestMapping(value = ["/", "/{x:[\\w\\-]+}", "/{x:^(?!api$).*$}/*/{y:[\\w\\-]+}", "/error"])
-//    fun getIndex(request: HttpServletRequest?): String? {
-//        return "/index.html"
+//    fun getIndex(): String? {
+//        return "forward:/index.html"
 //    }
 }

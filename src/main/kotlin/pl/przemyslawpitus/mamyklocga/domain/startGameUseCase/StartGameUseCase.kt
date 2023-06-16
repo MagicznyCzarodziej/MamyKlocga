@@ -2,7 +2,6 @@ package pl.przemyslawpitus.mamyklocga.domain.startGameUseCase
 
 import pl.przemyslawpitus.mamyklocga.WithLogger
 import pl.przemyslawpitus.mamyklocga.domain.Room
-import pl.przemyslawpitus.mamyklocga.domain.RoomId
 import pl.przemyslawpitus.mamyklocga.domain.RoomRepository
 import pl.przemyslawpitus.mamyklocga.domain.RoomState
 import pl.przemyslawpitus.mamyklocga.domain.UserId
@@ -13,11 +12,11 @@ class StartGameUseCase(
     private val gameCreator: GameCreator,
     private val gameStatusPublisher: GameStatusPublisher,
 ) {
-    fun startGame(userId: UserId, roomId: RoomId) {
-        val room = roomRepository.getByRoomId(roomId = roomId)
+    fun startGame(userId: UserId, roomCode: String) {
+        val room = roomRepository.getByCode(roomCode = roomCode)
 
         if (room == null) {
-            throw RuntimeException("Room ${roomId.value} not found")
+            throw RuntimeException("Room $roomCode not found")
         }
 
         if (room.ownerUser.userId != userId) {

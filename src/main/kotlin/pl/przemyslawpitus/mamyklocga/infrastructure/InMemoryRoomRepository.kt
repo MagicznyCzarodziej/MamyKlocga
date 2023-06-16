@@ -18,6 +18,11 @@ class InMemoryRoomRepository : RoomRepository {
         return rooms[roomId]
     }
 
+    override fun getByCode(roomCode: String): Room? {
+        return rooms.values.find { it.code == roomCode }
+    }
+
+
     override fun getByUserId(userId: UserId): List<Room> {
         return rooms.values.filter {
             it.users.any {

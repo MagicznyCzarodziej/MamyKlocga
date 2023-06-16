@@ -13,7 +13,9 @@ import pl.przemyslawpitus.mamyklocga.WithLogger
 import pl.przemyslawpitus.mamyklocga.domain.UserId
 import pl.przemyslawpitus.mamyklocga.domain.createRoomUseCase.CreateRoomUseCase
 import pl.przemyslawpitus.mamyklocga.domain.Room
-import pl.przemyslawpitus.mamyklocga.domain.RoomId
+import pl.przemyslawpitus.mamyklocga.domain.User
+import pl.przemyslawpitus.mamyklocga.domain.getRoomUseCase.GetRoomUseCase
+import pl.przemyslawpitus.mamyklocga.domain.getRoomUseCase.UserRoom
 import pl.przemyslawpitus.mamyklocga.domain.getRoomsUseCase.GetRoomsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.joinRoomUseCase.JoinRoomUseCase
 
@@ -23,6 +25,7 @@ class RoomsEndpoint(
     private val createRoomUseCase: CreateRoomUseCase,
     private val joinRoomUseCase: JoinRoomUseCase,
     private val getRoomsUseCase: GetRoomsUseCase,
+    private val getRoomUseCase: GetRoomUseCase,
 ) {
 
     @GetMapping("")
@@ -47,19 +50,32 @@ class RoomsEndpoint(
         return ResponseEntity.status(HttpStatus.CREATED).body(room.toRoomCreatedResponse())
     }
 
-    @PostMapping("/{roomId}/join")
+    @PostMapping("/{roomCode}/join")
     fun joinRoom(
         @CookieValue userId: String,
-        @PathVariable roomId: String,
-        @RequestBody request: JoinRoomRequest,
+        @PathVariable roomCode: String,
     ): ResponseEntity<*> {
-        logger.info("Join room, userId: $userId, roomId: $roomId")
+        logger.info("Join room, userId: $userId, roomCode: $roomCode")
         joinRoomUseCase.joinRoom(
-            roomId = RoomId(roomId),
+            roomCode = roomCode,
             userId = UserId(userId),
         )
 
         return ResponseEntity.ok().body(Unit)
+    }
+
+    @GetMapping("/{roomCode}")
+    fun getRoom(
+        @CookieValue userId: String,
+        @PathVariable roomCode: String,
+    ): ResponseEntity<*> {
+        logger.info("Get room, userId: $userId, roomCode: $roomCode")
+        val userRoom = getRoomUseCase.getRoom(
+            roomCode = roomCode,
+            userId = UserId(userId),
+        )
+
+        return ResponseEntity.ok().body(userRoom.toGetRoomResponse())
     }
 
     private companion object : WithLogger()
@@ -81,14 +97,11 @@ private fun Room.toRoomCreatedResponse() = RoomCreatedResponse(
     name = this.name,
 )
 
-class JoinRoomRequest()
-
 data class RoomsResponse(
     val rooms: List<RoomResponse>,
 )
 
 data class RoomResponse(
-    val roomId: String,
     val code: String,
     val name: String,
     val usersCount: Int,
@@ -99,8 +112,61 @@ private fun List<Room>.toRoomsResponse() = RoomsResponse(
 )
 
 private fun Room.toRoomResponse() = RoomResponse(
-    roomId = this.roomId.value,
     code = this.code,
     name = this.name,
     usersCount = this.users.size,
+)
+
+data class GetRoomResponse(
+    val code: String,
+    val name: String,
+    val users: List<User>,
+    val state: String,
+    val game: Game?,
+) {
+    data class User(
+        val username: String,
+    )
+
+    data class Game(
+        val roundsTotal: Int,
+        val currentRound: Round?,
+        val myPoints: Int,
+        val words: List<String>,
+    )
+
+    data class Round(
+        val roundNumber: Int,
+        val role: String,
+        val guesser: User,
+        val challenge: String,
+        val endsAt: String?,
+    )
+}
+
+private fun UserRoom.toGetRoomResponse() = GetRoomResponse(
+    code = this.code,
+    name = this.name,
+    users = this.users.map { it.toGetRoomUser() },
+    state = this.state.name,
+    game = this.game?.toGetRoomGame(),
+)
+
+private fun User.toGetRoomUser() = GetRoomResponse.User(
+    username = this.requiredUsername,
+)
+
+private fun UserRoom.UserGame.toGetRoomGame() = GetRoomResponse.Game(
+    roundsTotal = this.roundsTotal,
+    currentRound = this.currentRound.toGetRoomRound(),
+    myPoints = this.myPoints,
+    words = this.words,
+)
+
+private fun UserRoom.UserRound.toGetRoomRound() = GetRoomResponse.Round(
+    roundNumber = this.roundNumber,
+    role = this.role.name,
+    guesser = this.guesser.toGetRoomUser(),
+    challenge = this.challenge.text,
+    endsAt = this.endsAt?.toString(),
 )

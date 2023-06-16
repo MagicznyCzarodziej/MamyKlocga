@@ -1,14 +1,15 @@
 import { Home } from '../pages/Home/Home';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { connect, socket } from '../socket/socket';
 import { useHello } from '../api/useHello';
 import { Room } from '../pages/Room/Room';
 import { UserContext } from '../context/UserContext';
+import { Rooms } from '../pages/Rooms/Rooms';
 
 export const App = () => {
   const helloMutation = useHello();
-  const [isConnected, setIsConnected] = useState(false);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
   const user = useContext(UserContext);
 
   useEffect(() => {
@@ -20,40 +21,55 @@ export const App = () => {
       return;
     }
 
-    user.setUsername(helloMutation.data.username)
+    console.log('Hello:', helloMutation.data);
+
+    user.setUsername(helloMutation.data.username);
+    user.setHasUserId(true);
+
     connect(helloMutation.data.userId);
 
     socket.on('connect', () => {
-      console.log('Connected');
+      console.log('Socket.io connected');
+      setIsSocketConnected(true);
     });
-
-    setIsConnected(true);
 
     return () => {
       socket.off('connect');
-      setIsConnected(false);
+      setIsSocketConnected(false);
     };
-  }, [helloMutation]);
+  }, [helloMutation.isSuccess]);
 
   const AuthenticatedRoute = ({ element }: { element: JSX.Element }) => {
-    if (!isConnected) {
-      return <div>Ładowanie</div>
+    if (!isSocketConnected) {
+      return <Loading />;
     }
 
     if (user.username !== null) {
-      return element
+      return element;
     }
 
-    return <Navigate to="/" />
+    return <Navigate to="/" />;
   };
 
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/rooms" element={<div>Lista</div>} />
-      <Route path="/rooms/:roomId"
-             element={<AuthenticatedRoute element={<Room />} />} />
+      <Route
+        path="/rooms"
+        element={
+          <AuthenticatedRoute element={<Rooms />} />
+        }
+      />
+      <Route
+        path="/rooms/:roomCode"
+        element={
+          <AuthenticatedRoute element={<Room />} />
+        }
+      />
     </Routes>
   );
 };
 
+const Loading = () => {
+  return <div>Ładowanie</div>;
+};

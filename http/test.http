@@ -1,40 +1,55 @@
 GET https://mamyklocga.przemyslawpitus.pl:48207/socket.io/?EIO=3&transport=polling&t=1686237611232-1&sid=2c522855-3b2e-476e-8ed5-e7e04801da54
 
 ### Hello
-POST http://localhost:24003/api/users/hello
+POST http://localhost:24003/api/me/hello
 Content-Type: application/json
 Accept: application/json
 
 {
-  "sessionId": "d06bc845-350a-411d-a778-e9cc51442095"
+  "sessionId": "ce8f37ed-1589-4ac5-8d85-74891c8131d7"
+}
+
+### Set username
+POST http://localhost:24003/api/me/username
+Content-Type: application/json
+Accept: application/json
+Cookie: userId=e2ee15f9-cdd0-4dfd-bfa3-5c8abbd8bf0b
+
+{
+  "username": "deko"
 }
 
 ### Create room
 POST http://localhost:24003/api/rooms
 Content-Type: application/json
 Accept: application/json
-Cookie: userId=862f5a34-4e9c-4ac0-833e-f516a10adef3
+Cookie: userId=e2ee15f9-cdd0-4dfd-bfa3-5c8abbd8bf0b
 
 {
-  "roomName": "nazwa",
-  "username": "Deko"
+  "roomName": "nasszwa"
 }
 
-> {% client.global.set("roomId", response.body.roomId) %}
+> {% client.global.set("roomCode", response.body.code) %}
 
 ### Join room
-POST http://localhost:24003/api/rooms/{{roomId}}/join
+POST http://localhost:24003/api/rooms/{{roomCode}}/join
 Content-Type: application/json
 Accept: application/json
-Cookie: userId=35f31eac-6b84-4192-9293-eda6820bbd03
-
-{
-  "username": "gram"
-}
+Cookie: userId=e2ee15f9-cdd0-4dfd-bfa3-5c8abbd8bf0b
 
 ### Start game
-POST http://localhost:24003/api/rooms/{{roomId}}/start
+POST http://localhost:24003/api/rooms/{{roomCode}}/start
 Content-Type: application/json
 Accept: application/json
-Cookie: userId=862f5a34-4e9c-4ac0-833e-f516a10adef3
+Cookie: userId=e2ee15f9-cdd0-4dfd-bfa3-5c8abbd8bf0b
 
+### Get rooms
+GET http://localhost:24003/api/rooms
+Content-Type: application/json
+Accept: application/json
+
+### Get room
+GET http://localhost:24003/api/rooms/{{roomCode}}
+Content-Type: application/json
+Accept: application/json
+Cookie: userId=e2ee15f9-cdd0-4dfd-bfa3-5c8abbd8bf0b

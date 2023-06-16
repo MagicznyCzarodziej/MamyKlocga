@@ -8,6 +8,8 @@ import pl.przemyslawpitus.mamyklocga.domain.RoomRepository
 import pl.przemyslawpitus.mamyklocga.domain.bindSessionToUserUseCase.BindSessionToUserUseCase
 import pl.przemyslawpitus.mamyklocga.domain.bindSessionToUserUseCase.UserSessionBinder
 import pl.przemyslawpitus.mamyklocga.domain.game.ChallengeProvider
+import pl.przemyslawpitus.mamyklocga.domain.game.PointsCounter
+import pl.przemyslawpitus.mamyklocga.domain.getRoomUseCase.GetRoomUseCase
 import pl.przemyslawpitus.mamyklocga.domain.getRoomsUseCase.GetRoomsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.helloUseCase.HelloUseCase
 import pl.przemyslawpitus.mamyklocga.domain.joinRoomUseCase.JoinRoomUseCase
@@ -16,6 +18,7 @@ import pl.przemyslawpitus.mamyklocga.domain.setUsernameUseCase.SetUsernameUseCas
 import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.GameCreator
 import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.GameStatusPublisher
 import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.StartGameUseCase
+import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.WordsProvider
 import pl.przemyslawpitus.mamyklocga.infrastructure.InMemoryRoomRepository
 import pl.przemyslawpitus.mamyklocga.infrastructure.InMemoryUserRepository
 import pl.przemyslawpitus.mamyklocga.infrastructure.sockets.SocketIoGameStatusPublisher
@@ -49,6 +52,20 @@ class DomainConfig {
         roomRoomRepository: RoomRepository,
     ) = GetRoomsUseCase(
         roomRepository = roomRoomRepository,
+    )
+
+    @Bean
+    fun pointsCounter() = PointsCounter()
+
+    @Bean
+    fun getRoomUseCase(
+        roomRoomRepository: RoomRepository,
+        userRepository: UserRepository,
+        pointsCounter: PointsCounter,
+    ) = GetRoomUseCase(
+        roomRepository = roomRoomRepository,
+        userRepository = userRepository,
+        pointsCounter = pointsCounter,
     )
 
     @Bean
@@ -103,10 +120,15 @@ class DomainConfig {
     fun challengeProvider() = ChallengeProvider()
 
     @Bean
+    fun wordsProvider() = WordsProvider()
+
+    @Bean
     fun gameCreator(
         challengeProvider: ChallengeProvider,
+        wordsProvider: WordsProvider,
     ) = GameCreator(
         challengeProvider = challengeProvider,
+        wordsProvider = wordsProvider,
     )
 
     @Bean

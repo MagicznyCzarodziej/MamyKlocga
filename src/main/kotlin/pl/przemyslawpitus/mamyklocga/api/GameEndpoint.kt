@@ -16,16 +16,16 @@ import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.StartGameUseCase
 class GameEndpoint(
     private val startGameUseCase: StartGameUseCase,
 ) {
-    @PostMapping("/{roomId}/start")
+    @PostMapping("/{roomCode}/start")
     fun startGame(
         @CookieValue userId: String,
-        @PathVariable roomId: String,
+        @PathVariable roomCode: String,
     ): ResponseEntity<*> {
-        logger.info("Start game in room roomId: $roomId, userId: $userId")
+        logger.info("Start game in room roomCode: $roomCode, userId: $userId")
 
         startGameUseCase.startGame(
             userId = UserId(userId),
-            roomId = RoomId(roomId),
+            roomCode = roomCode,
         )
 
         return ResponseEntity.ok().body(Unit)

@@ -1,14 +1,8 @@
 import { Button } from '../../components/Button/Button';
-import { useMutation, useQuery } from '@tanstack/react-query';
 import { useContext, useEffect, useState } from 'react';
-import { connect, socket } from '../../socket/socket';
-import api from '../../api/api';
-import { HelloResponse } from '../../types/HelloResponse';
 import { useNavigate } from 'react-router-dom';
 import { useSetUsername } from '../../api/useSetUsername';
 import { UserContext } from '../../context/UserContext';
-
-const test = () => api.get<string>('/test');
 
 export const Home = () => {
 
@@ -20,7 +14,7 @@ export const Home = () => {
   const [username, setUsername] = useState(user.username);
 
   return (
-    <div className="grid justify-stretch text-center m-12">
+    <div className="grid justify-stretch text-center p-12">
       <div className="text-4xl">MamyKloc.ga</div>
       <div className="my-12">
         <input placeholder="Imię"
@@ -33,9 +27,9 @@ export const Home = () => {
       <Button onClick={() => {
         if (username == null) return;
         setUsernameMutation.mutate(username, {
-          onSuccess: () => {
-            user.setUsername(username);
-            navigate('/rooms/1');
+          onSuccess: (data) => {
+            user.setUsername(data.username);
+            navigate('/rooms');
           }
         });
 

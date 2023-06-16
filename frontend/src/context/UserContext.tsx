@@ -1,13 +1,15 @@
 import { createContext, FunctionComponent, ReactNode, useState } from 'react';
 
 interface UserContextI {
-  isLoggedIn: boolean;
+  hasUserId: boolean;
+  setHasUserId: (hasUserId: boolean) => void;
   username: string | null;
   setUsername: (username: string | null) => void;
 }
 
 const defaultValue: UserContextI = {
-  isLoggedIn: false,
+  hasUserId: false,
+  setHasUserId: () => void 0,
   username: null,
   setUsername: () => void 0
 };
@@ -19,14 +21,11 @@ interface Props {
 }
 
 export const UserProvider: FunctionComponent<Props> = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(Boolean(localStorage.getItem('isLoggedIn')));
-  const [username, setUsername] = useState<string | null>(localStorage.getItem('username') || null);
+  const [hasUserId, setHasUserId] = useState(Boolean(localStorage.getItem('hasUserId')));
+  const [username, setUsername] = useState<string | null>(localStorage.getItem('username'));
 
-  const logIn = (username: string | null) => {
-    console.log('login', username);
+  const saveUsername = (username: string | null) => {
     setUsername(username);
-    setIsLoggedIn(true);
-    localStorage.setItem('isLoggedIn', 'true');
     if (username === null) {
       localStorage.removeItem('username');
     } else {
@@ -35,9 +34,10 @@ export const UserProvider: FunctionComponent<Props> = ({ children }) => {
   };
 
   return <UserContext.Provider value={{
-    isLoggedIn,
+    hasUserId,
+    setHasUserId,
     username,
-    setUsername: logIn,
+    setUsername: saveUsername,
   }}>
     {children}
   </UserContext.Provider>;

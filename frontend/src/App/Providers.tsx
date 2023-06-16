@@ -7,7 +7,13 @@ interface Props {
   children: ReactNode;
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false
+    }
+  }
+});
 
 export const Providers: FunctionComponent<Props> = ({ children }) => {
   return (

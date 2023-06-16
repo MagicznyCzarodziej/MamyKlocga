@@ -49,7 +49,7 @@ class UserEndpoint(
         @CookieValue userId: String,
         @RequestBody request: SetUsernameRequest,
     ): ResponseEntity<*> {
-        logger.info("Set username $, userId: $userId")
+        logger.info("Set username $userId: ${request.username}")
 
         val user = setUsernameUseCase.setUsername(
             userId = UserId(userId),

@@ -1,6 +1,7 @@
 package pl.przemyslawpitus.mamyklocga.domain.game
 
 import pl.przemyslawpitus.mamyklocga.domain.User
+import pl.przemyslawpitus.mamyklocga.domain.UserId
 import java.time.Instant
 import kotlin.time.Duration
 
@@ -8,7 +9,7 @@ data class Game(
     val roundsTotal: Int,
     val currentRound: Round?,
     val rounds: List<Round>,
-    val wordsPerUser: Map<User, List<Word>>,
+    val wordsPerUser: Map<UserId, List<Word>>,
 )
 
 data class Round(
@@ -30,5 +31,4 @@ data class Build(
 data class Word(
     val wordId: String, // TODO make WordId
     val text: String,
-    val used: Boolean,
 )

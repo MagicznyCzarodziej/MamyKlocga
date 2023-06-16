@@ -6,7 +6,7 @@ import pl.przemyslawpitus.mamyklocga.domain.User
 import pl.przemyslawpitus.mamyklocga.domain.UserId
 import pl.przemyslawpitus.mamyklocga.domain.UserRepository
 import pl.przemyslawpitus.mamyklocga.domain.Room
-import pl.przemyslawpitus.mamyklocga.domain.RoomId
+import pl.przemyslawpitus.mamyklocga.domain.RoomState
 import pl.przemyslawpitus.mamyklocga.domain.leaveRoomUseCase.LeaveRoomUseCase
 import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.GameStatusPublisher
 import java.time.Instant
@@ -18,14 +18,18 @@ class JoinRoomUseCase(
     private val gameStatusPublisher: GameStatusPublisher,
 ) {
     fun joinRoom(
-        roomId: RoomId,
+        roomCode: String,
         userId: UserId,
     ) {
         val user = userRepository.getByUserId(userId)
         if (user == null) throw RuntimeException("User not found") // TODO
 
-        val room = roomRepository.getByRoomId(roomId = roomId)
+        val room = roomRepository.getByCode(roomCode = roomCode)
         if (room == null) throw RuntimeException("Room not found") // TODO
+
+        if (room.state != RoomState.CREATED) {
+            throw RuntimeException("User ${userId.value} cant join room $roomCode, because game has already started")
+        }
 
         leaveRoomUseCase.leaveAllRooms(user)
 
@@ -36,7 +40,7 @@ class JoinRoomUseCase(
         )
         roomRepository.saveRoom(room = updatedRoom)
 
-        logger.info("User ${user.userId} joined room ${room.roomId.value}")
+        logger.info("User ${user.userId} joined room ${room.code}")
     }
 
     private companion object : WithLogger()
