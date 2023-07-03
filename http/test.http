@@ -52,4 +52,10 @@ Accept: application/json
 GET http://localhost:24003/api/rooms/{{roomCode}}
 Content-Type: application/json
 Accept: application/json
-Cookie: userId=e2ee15f9-cdd0-4dfd-bfa3-5c8abbd8bf0b
+Cookie: userId=e2ee15f9-cdd0-4dfd-bfa3-5c8abbd8bf0b### Get room
+
+### Start current round
+POST http://localhost:24003/api/rooms/2918/startRound
+Content-Type: application/json
+Accept: application/json
+Cookie: userId=e072cdb1-2780-4676-a4c2-731b4e172e57

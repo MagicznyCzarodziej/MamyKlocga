@@ -10,11 +10,13 @@ import pl.przemyslawpitus.mamyklocga.WithLogger
 import pl.przemyslawpitus.mamyklocga.domain.RoomId
 import pl.przemyslawpitus.mamyklocga.domain.UserId
 import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.StartGameUseCase
+import pl.przemyslawpitus.mamyklocga.domain.startRoundUseCase.StartRoundUseCase
 
 @RestController
 @RequestMapping("/rooms")
 class GameEndpoint(
     private val startGameUseCase: StartGameUseCase,
+    private val startRoundUseCase: StartRoundUseCase,
 ) {
     @PostMapping("/{roomCode}/start")
     fun startGame(
@@ -26,6 +28,21 @@ class GameEndpoint(
         startGameUseCase.startGame(
             userId = UserId(userId),
             roomCode = roomCode,
+        )
+
+        return ResponseEntity.ok().body(Unit)
+    }
+
+    @PostMapping("/{roomCode}/startRound")
+    fun startCurrentRound(
+        @CookieValue userId: String,
+        @PathVariable roomCode: String,
+    ): ResponseEntity<*> {
+        logger.info("Start current round in room roomCode: $roomCode, userId: $userId")
+
+        startRoundUseCase.startRound(
+            roomCode = roomCode,
+            userId = UserId(userId),
         )
 
         return ResponseEntity.ok().body(Unit)

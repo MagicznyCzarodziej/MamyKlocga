@@ -333,4 +333,5 @@ val rawWords = listOf(
     "Lis",
     "Lama",
     "Konik morski",
+    "Palma",
 )

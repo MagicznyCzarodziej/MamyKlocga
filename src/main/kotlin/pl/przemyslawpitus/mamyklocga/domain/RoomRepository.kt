@@ -6,4 +6,5 @@ interface RoomRepository {
     fun getByCode(roomCode: String): Room?
     fun getByUserId(userId: UserId): List<Room>
     fun getByVisibility(visibility: RoomVisibility): List<Room>
+    fun getAll(): List<Room>
 }

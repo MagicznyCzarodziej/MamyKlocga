@@ -8,6 +8,7 @@ export const useGetRoom = (roomCode: string) => useQuery(['getRooms'], getRoom(r
 export interface RoomResponse {
   code: string;
   name: string;
+  isRoomOwner: boolean;
   users: User[];
   state: 'CREATED' | 'IN_GAME' | 'GAME_ENDED' | 'ABORTED';
   game: Game | null;
@@ -30,4 +31,5 @@ interface Round {
   guesser: User;
   challenge: string;
   endsAt: string | null;
+  state: 'WAITING_TO_START' | 'IN_PROGRESS' | 'ENDED'
 }

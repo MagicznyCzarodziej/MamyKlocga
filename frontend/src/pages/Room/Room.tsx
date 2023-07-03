@@ -16,8 +16,20 @@ export const Room = () => {
       roomQuery.refetch().then();
     });
 
+    socket.on('ROUND_STARTED', (data) => {
+      console.log('Round started', data);
+      roomQuery.refetch().then();
+    });
+
+    socket.on('ROUND_ENDED', (data) => {
+      console.log('Round ended', data);
+      roomQuery.refetch().then();
+    });
+
     return () => {
       socket.off('GAME_STARTED');
+      socket.off('ROUND_ENDED');
+      socket.off('ROUND_STARTED');
     };
   }, []);
 

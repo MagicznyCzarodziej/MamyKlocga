@@ -25,7 +25,7 @@ class GetRoomUseCase(
         val room = roomRepository.getByCode(roomCode)
         if (room == null) throw RuntimeException("Room with code $roomCode not found")
 
-        val isUserInRoom = room.users.any {it.userId == user.userId}
+        val isUserInRoom = room.users.any { it.userId == user.userId }
         if (!isUserInRoom) throw RuntimeException("User ${userId.value} is not in room $roomCode. User: $user, Users in room: ${room.users.map { it.toString() }}")
 
         val userRoom = mapRoomToUserRoom(
@@ -42,12 +42,15 @@ class GetRoomUseCase(
     ) = UserRoom(
         code = room.code,
         name = room.name,
+        isRoomOwner = room.ownerUser.userId == user.userId,
         users = room.users,
         state = room.state,
-        game = room.game?.let { mapGame(
-            game = it,
-            user = user
-        ) },
+        game = room.game?.let {
+            mapGame(
+                game = it,
+                user = user
+            )
+        },
     )
 
     private fun mapGame(game: Game, user: User): UserRoom.UserGame {
@@ -72,17 +75,22 @@ class GetRoomUseCase(
         ),
         guesser = currentRound.guesser,
         challenge = currentRound.challenge,
-        endsAt = currentRound.startedAt?.let { it + currentRound.timeTotal.toJavaDuration() }
+        endsAt = currentRound.startedAt?.let { it + currentRound.timeTotal.toJavaDuration() },
+        state =
+        if (currentRound.isEnded) UserRoom.UserRoundState.ENDED
+        else if (currentRound.startedAt != null) UserRoom.UserRoundState.IN_PROGRESS
+        else UserRoom.UserRoundState.WAITING_TO_START
     )
 
     private fun getUserRole(round: Round, user: User) =
-        if (round.guesser == user) UserRoom.UserRole.GUESSER
+        if (round.guesser.userId == user.userId) UserRoom.UserRole.GUESSER
         else UserRoom.UserRole.BUILDER
 }
 
 data class UserRoom(
     val code: String,
     val name: String,
+    val isRoomOwner: Boolean,
     val users: Set<User>,
     val state: RoomState,
     val game: UserGame?,
@@ -101,9 +109,14 @@ data class UserRoom(
         val guesser: User,
         val challenge: Challenge,
         val endsAt: Instant?,
+        val state: UserRoundState,
     )
 
     enum class UserRole {
         BUILDER, GUESSER
+    }
+
+    enum class UserRoundState {
+        WAITING_TO_START, IN_PROGRESS, ENDED
     }
 }

@@ -7,6 +7,7 @@ import pl.przemyslawpitus.mamyklocga.domain.createRoomUseCase.CreateRoomUseCase
 import pl.przemyslawpitus.mamyklocga.domain.RoomRepository
 import pl.przemyslawpitus.mamyklocga.domain.bindSessionToUserUseCase.BindSessionToUserUseCase
 import pl.przemyslawpitus.mamyklocga.domain.bindSessionToUserUseCase.UserSessionBinder
+import pl.przemyslawpitus.mamyklocga.domain.endRoundsUseCase.EndRoundsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.ChallengeProvider
 import pl.przemyslawpitus.mamyklocga.domain.game.PointsCounter
 import pl.przemyslawpitus.mamyklocga.domain.getRoomUseCase.GetRoomUseCase
@@ -19,6 +20,7 @@ import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.GameCreator
 import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.GameStatusPublisher
 import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.StartGameUseCase
 import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.WordsProvider
+import pl.przemyslawpitus.mamyklocga.domain.startRoundUseCase.StartRoundUseCase
 import pl.przemyslawpitus.mamyklocga.infrastructure.InMemoryRoomRepository
 import pl.przemyslawpitus.mamyklocga.infrastructure.InMemoryUserRepository
 import pl.przemyslawpitus.mamyklocga.infrastructure.sockets.SocketIoGameStatusPublisher
@@ -148,6 +150,23 @@ class DomainConfig {
         userRepository = userRepository,
         roomRepository = roomRepository,
         userSessionBinder = userSessionBinder,
+        gameStatusPublisher = gameStatusPublisher,
+    )
+
+    @Bean
+    fun endRoundsUseCase(
+        roomRepository: RoomRepository,
+        gameStatusPublisher: GameStatusPublisher
+    ) = EndRoundsUseCase(
+        roomRepository = roomRepository,
+        gameStatusPublisher = gameStatusPublisher,
+    )
+    @Bean
+    fun startRoundUseCase(
+        roomRepository: RoomRepository,
+        gameStatusPublisher: GameStatusPublisher
+    ) = StartRoundUseCase(
+        roomRepository = roomRepository,
         gameStatusPublisher = gameStatusPublisher,
     )
 }

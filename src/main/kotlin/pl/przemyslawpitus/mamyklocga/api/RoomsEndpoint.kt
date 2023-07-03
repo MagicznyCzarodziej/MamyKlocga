@@ -86,13 +86,11 @@ data class CreateRoomRequest(
 )
 
 data class RoomCreatedResponse(
-    val roomId: String,
     val code: String,
     val name: String,
 )
 
 private fun Room.toRoomCreatedResponse() = RoomCreatedResponse(
-    roomId = this.roomId.value,
     code = this.code,
     name = this.name,
 )
@@ -120,6 +118,7 @@ private fun Room.toRoomResponse() = RoomResponse(
 data class GetRoomResponse(
     val code: String,
     val name: String,
+    val isRoomOwner: Boolean,
     val users: List<User>,
     val state: String,
     val game: Game?,
@@ -141,12 +140,14 @@ data class GetRoomResponse(
         val guesser: User,
         val challenge: String,
         val endsAt: String?,
+        val state: String,
     )
 }
 
 private fun UserRoom.toGetRoomResponse() = GetRoomResponse(
     code = this.code,
     name = this.name,
+    isRoomOwner = this.isRoomOwner,
     users = this.users.map { it.toGetRoomUser() },
     state = this.state.name,
     game = this.game?.toGetRoomGame(),
@@ -169,4 +170,5 @@ private fun UserRoom.UserRound.toGetRoomRound() = GetRoomResponse.Round(
     guesser = this.guesser.toGetRoomUser(),
     challenge = this.challenge.text,
     endsAt = this.endsAt?.toString(),
+    state = this.state.name,
 )

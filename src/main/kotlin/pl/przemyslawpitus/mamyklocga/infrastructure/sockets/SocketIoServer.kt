@@ -25,7 +25,7 @@ class SocketIoServer(
         val config = Configuration()
         config.port = socketIoProperties.port
         config.jsonSupport = JacksonJsonSupport(kotlinModule())
-        config.isRandomSession = true // Treat every browser tab as different client
+        config.isRandomSession = false // False = Do not treat every browser tab as different client
 
         if (shouldUseHttps()) {
             config.keyStore = ClassPathResource(socketIoProperties.keyStoreResourcePath!!).inputStream
@@ -73,7 +73,7 @@ class SocketIoServer(
             val userId = client.handshakeData.getSingleUrlParam("userId")?.let { UserId(it) }
                 ?: throw RuntimeException("No userId passed on socket connection, sessionId: ${sessionId.value}")
 
-            client.joinRoom(LOBBY_ROOM)
+//            client.joinRoom(LOBBY_ROOM)
             logger.info("Socket connected, userId: ${userId.value}, sessionId: ${sessionId.value}")
 
             handler(userId, sessionId)

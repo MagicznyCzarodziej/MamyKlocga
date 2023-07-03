@@ -29,7 +29,12 @@ class SocketIoGameStatusPublisher(
     }
 
     override fun roundEnded(room: Room) {
-        TODO("Not yet implemented")
+        val event = RoundEndedEvent(roundNumber = room.game!!.currentRound!!.roundNumber)
+
+        socketIoServer.sendToRoom(
+            socketioRoomId = room.roomId.value,
+            event = event,
+        )
     }
 
     override fun guessesUpdate(room: Room) {
@@ -52,13 +57,17 @@ class SocketIoGameStatusPublisher(
     }
 
     override fun joinRoom(roomId: RoomId, user: User) {
-        socketIoServer.leaveRoom(
-            socketioRoomId = LOBBY_ROOM,
-            user = user,
-        )
+//        socketIoServer.leaveRoom(
+//            socketioRoomId = LOBBY_ROOM,
+//            user = user,
+//        )
         socketIoServer.joinRoom(
             socketioRoomId = roomId.value,
             user = user,
+        )
+        socketIoServer.sendToRoom( // To powoduje pętlę połączeń
+            socketioRoomId = roomId.value,
+            event = UserJoinedRoomEvent(user = user),
         )
     }
 
@@ -67,9 +76,13 @@ class SocketIoGameStatusPublisher(
             socketioRoomId = roomId.value,
             user = user,
         )
-        socketIoServer.joinRoom(
-            socketioRoomId = LOBBY_ROOM,
-            user = user,
+//        socketIoServer.joinRoom(
+//            socketioRoomId = LOBBY_ROOM,
+//            user = user,
+//        )
+        socketIoServer.sendToRoom(
+            socketioRoomId = roomId.value,
+            event = UserLeftRoomEvent(user = user),
         )
     }
 
@@ -92,6 +105,17 @@ data class RoundStartedPayload(
     val roundNumber: Int,
 )
 
+class RoundEndedEvent(roundNumber: Int) : Event<RoundEndedPayload>(
+    name = "ROUND_ENDED",
+    payload = RoundEndedPayload(
+        roundNumber = roundNumber,
+    )
+)
+
+data class RoundEndedPayload(
+    val roundNumber: Int,
+)
+
 class NewRoomEvent(room: Room) : Event<NewRoomPayload>(
     name = "NEW_ROOM",
     payload = NewRoomPayload(
@@ -105,4 +129,34 @@ data class NewRoomPayload(
     val code: String,
     val name: String,
     val usersCount: Int,
+)
+
+data class UserJoinedRoomEvent(
+    val user: User,
+) : Event<UserJoinedRoomPayload>(
+    name = "USER_JOINED_ROOM",
+    payload = UserJoinedRoomPayload(
+        userId = user.userId.value,
+        username = user.requiredUsername,
+    )
+)
+
+data class UserJoinedRoomPayload(
+    val userId: String,
+    val username: String,
+)
+
+data class UserLeftRoomEvent(
+    val user: User,
+) : Event<UserLeftRoomPayload>(
+    name = "USER_LEFT_ROOM",
+    payload = UserLeftRoomPayload(
+        userId = user.userId.value,
+        username = user.requiredUsername,
+    )
+)
+
+data class UserLeftRoomPayload(
+    val userId: String,
+    val username: String,
 )

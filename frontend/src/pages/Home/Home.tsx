@@ -3,15 +3,21 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSetUsername } from '../../api/useSetUsername';
 import { UserContext } from '../../context/UserContext';
+import { userCreateRoom } from '../../api/useCreateRoom';
 
 export const Home = () => {
 
   const setUsernameMutation = useSetUsername();
+  const createRoomMutation = userCreateRoom();
 
   const navigate = useNavigate();
 
   const user = useContext(UserContext);
   const [username, setUsername] = useState(user.username);
+
+  useEffect(() => {
+    setUsername(user.username)
+  }, [user.username])
 
   return (
     <div className="grid justify-stretch text-center p-12">
@@ -36,6 +42,17 @@ export const Home = () => {
       }}>Dołącz do gry</Button>
       <div className="my-3 text-xl font-light text-gray-500">lub</div>
       <Button light onClick={() => {
+        if (username == null) return;
+        setUsernameMutation.mutate(username, {
+          onSuccess: (data) => {
+            user.setUsername(data.username);
+            createRoomMutation.mutate("nazwa", {
+              onSuccess: (room) => {
+                navigate(`/rooms/${room.code}`)
+              }
+            })
+          }})
+
       }}>Stwórz grę</Button>
     </div>);
 };

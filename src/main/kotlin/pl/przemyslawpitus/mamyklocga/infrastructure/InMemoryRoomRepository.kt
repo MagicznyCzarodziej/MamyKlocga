@@ -22,7 +22,6 @@ class InMemoryRoomRepository : RoomRepository {
         return rooms.values.find { it.code == roomCode }
     }
 
-
     override fun getByUserId(userId: UserId): List<Room> {
         return rooms.values.filter {
             it.users.any {
@@ -33,5 +32,9 @@ class InMemoryRoomRepository : RoomRepository {
 
     override fun getByVisibility(visibility: RoomVisibility): List<Room> {
         return rooms.values.filter { it.visibility == visibility }
+    }
+
+    override fun getAll(): List<Room> {
+        return rooms.values.toList()
     }
 }
