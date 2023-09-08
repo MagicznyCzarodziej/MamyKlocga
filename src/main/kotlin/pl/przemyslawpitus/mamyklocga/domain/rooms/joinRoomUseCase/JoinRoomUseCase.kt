@@ -8,7 +8,6 @@ import pl.przemyslawpitus.mamyklocga.domain.user.UserRepository
 import pl.przemyslawpitus.mamyklocga.domain.rooms.Room
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomState
 import pl.przemyslawpitus.mamyklocga.domain.rooms.leaveRoomUseCase.LeaveRoomUseCase
-import pl.przemyslawpitus.mamyklocga.domain.game.startGameUseCase.GameStatusPublisher
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomChangedEvent
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomWatchingManager
 import java.time.Instant
@@ -41,7 +40,7 @@ class JoinRoomUseCase(
 
         roomWatchingManager.publish(
             RoomChangedEvent(
-                room = room
+                room = savedRoom
             )
         )
 

@@ -16,8 +16,6 @@ import pl.przemyslawpitus.mamyklocga.domain.rooms.leaveRoomUseCase.LeaveRoomUseC
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomsListWatchingManager
 import pl.przemyslawpitus.mamyklocga.domain.user.setUsernameUseCase.SetUsernameUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.startGameUseCase.GameCreator
-import pl.przemyslawpitus.mamyklocga.domain.game.startGameUseCase.GameStatusPublisher
-import pl.przemyslawpitus.mamyklocga.domain.game.startGameUseCase.NoOpGameStatusPublisher
 import pl.przemyslawpitus.mamyklocga.domain.game.startGameUseCase.StartGameUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.startGameUseCase.WordsProvider
 import pl.przemyslawpitus.mamyklocga.domain.game.startRoundUseCase.StartRoundUseCase
@@ -80,7 +78,6 @@ class DomainConfig {
         roomRepository: RoomRepository,
         userRepository: UserRepository,
         leaveRoomUseCase: LeaveRoomUseCase,
-        gameStatusPublisher: GameStatusPublisher,
         roomsListWatchingManager: RoomsListWatchingManager,
         getRoomsUseCase: GetRoomsUseCase,
     ) = CreateRoomUseCase(
@@ -165,9 +162,6 @@ class DomainConfig {
     ) = RoomToUserRoomMapper(
         pointsCounter = pointsCounter,
     )
-
-    @Bean
-    fun gameStatusPublisher(): GameStatusPublisher = NoOpGameStatusPublisher()
 
     @Bean
     fun roomStatusController(): RoomStatusController =
