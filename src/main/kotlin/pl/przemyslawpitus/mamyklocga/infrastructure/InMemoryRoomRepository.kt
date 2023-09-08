@@ -1,10 +1,10 @@
 package pl.przemyslawpitus.mamyklocga.infrastructure
 
-import pl.przemyslawpitus.mamyklocga.domain.Room
-import pl.przemyslawpitus.mamyklocga.domain.RoomId
-import pl.przemyslawpitus.mamyklocga.domain.RoomRepository
-import pl.przemyslawpitus.mamyklocga.domain.RoomVisibility
-import pl.przemyslawpitus.mamyklocga.domain.UserId
+import pl.przemyslawpitus.mamyklocga.domain.rooms.Room
+import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomId
+import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomRepository
+import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomVisibility
+import pl.przemyslawpitus.mamyklocga.domain.user.UserId
 
 class InMemoryRoomRepository : RoomRepository {
     private val rooms: MutableMap<RoomId, Room> = mutableMapOf()

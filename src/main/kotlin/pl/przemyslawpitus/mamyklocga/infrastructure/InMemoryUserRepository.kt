@@ -1,9 +1,9 @@
 package pl.przemyslawpitus.mamyklocga.infrastructure
 
-import pl.przemyslawpitus.mamyklocga.domain.SessionId
-import pl.przemyslawpitus.mamyklocga.domain.User
-import pl.przemyslawpitus.mamyklocga.domain.UserId
-import pl.przemyslawpitus.mamyklocga.domain.UserRepository
+import pl.przemyslawpitus.mamyklocga.domain.user.SessionId
+import pl.przemyslawpitus.mamyklocga.domain.user.User
+import pl.przemyslawpitus.mamyklocga.domain.user.UserId
+import pl.przemyslawpitus.mamyklocga.domain.user.UserRepository
 
 class InMemoryUserRepository : UserRepository {
     private val users: MutableMap<UserId, User> = mutableMapOf()

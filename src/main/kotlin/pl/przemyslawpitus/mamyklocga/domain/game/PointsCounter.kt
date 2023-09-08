@@ -1,6 +1,6 @@
 package pl.przemyslawpitus.mamyklocga.domain.game
 
-import pl.przemyslawpitus.mamyklocga.domain.UserId
+import pl.przemyslawpitus.mamyklocga.domain.user.UserId
 
 class PointsCounter {
     fun countPointsForGame(game: Game): Map<UserId, Int> {

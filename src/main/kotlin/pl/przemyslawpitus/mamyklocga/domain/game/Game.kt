@@ -1,7 +1,7 @@
 package pl.przemyslawpitus.mamyklocga.domain.game
 
-import pl.przemyslawpitus.mamyklocga.domain.User
-import pl.przemyslawpitus.mamyklocga.domain.UserId
+import pl.przemyslawpitus.mamyklocga.domain.user.User
+import pl.przemyslawpitus.mamyklocga.domain.user.UserId
 import java.time.Instant
 import kotlin.time.Duration
 

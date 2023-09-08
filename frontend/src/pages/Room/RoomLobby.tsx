@@ -2,8 +2,6 @@ import { Button } from '../../components/Button/Button';
 import { RoomResponse } from '../../api/useGetRoom';
 import { useStartGame } from '../../api/useStartGame';
 import { useEffect, useState } from 'react';
-import { socket } from '../../socket/socket';
-import { useSetUsername } from '../../api/useSetUsername';
 
 interface Props {
   room: RoomResponse;
@@ -15,27 +13,6 @@ export const RoomLobby = (props: Props) => {
   const startGameMutation = useStartGame();
 
   const [users, setUsers] = useState(room.users)
-
-  useEffect(() => {
-    socket.on('USER_JOINED_ROOM', (data) => {
-      console.log('User joined');
-      setUsers(
-        users => [...users, {username: data.username}]
-      )
-    });
-
-    socket.on('USER_LEFT_ROOM', (data) => {
-      console.log('User left');
-      setUsers(
-        users => users.filter(user => user.username !== data.username)
-      )
-    });
-
-    return () => {
-      socket.off('USER_JOINED_ROOM');
-      socket.off('USER_LEFT_ROOM');
-    };
-  }, []);
 
   return (
     <div>

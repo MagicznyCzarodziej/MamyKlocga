@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 const getRoom = (roomCode: string) => () => api.get<RoomResponse>(`/rooms/${roomCode}`);
 
-export const useGetRoom = (roomCode: string) => useQuery(['getRooms'], getRoom(roomCode));
+export const useGetRoom = (roomCode: string) => useQuery(['getRoom', roomCode], getRoom(roomCode));
 
 export interface RoomResponse {
   code: string;

@@ -1,15 +1,16 @@
-import axios from 'axios';
+import axios, { GenericAbortSignal } from 'axios';
 
 const axiosInstance = axios.create({
   baseURL: '/api',
 });
 
 const api = {
-  get: async <R>(url: string) => {
+  get: async <R>(url: string, signal?: GenericAbortSignal) => {
     const response = await axiosInstance.get<R>(url, {
       headers: {
         Accept: 'application/json'
-      }
+      },
+      signal,
     });
     return response.data;
   },

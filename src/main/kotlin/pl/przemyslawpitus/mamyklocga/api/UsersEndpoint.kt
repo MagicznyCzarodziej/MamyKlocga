@@ -10,11 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pl.przemyslawpitus.mamyklocga.WithLogger
-import pl.przemyslawpitus.mamyklocga.domain.User
-import pl.przemyslawpitus.mamyklocga.domain.UserId
-import pl.przemyslawpitus.mamyklocga.domain.helloUseCase.HelloUseCase
-import pl.przemyslawpitus.mamyklocga.domain.setUsernameUseCase.SetUsernameUseCase
-import java.util.*
+import pl.przemyslawpitus.mamyklocga.domain.user.User
+import pl.przemyslawpitus.mamyklocga.domain.user.UserId
+import pl.przemyslawpitus.mamyklocga.domain.user.helloUseCase.HelloUseCase
+import pl.przemyslawpitus.mamyklocga.domain.user.setUsernameUseCase.SetUsernameUseCase
 
 @RestController
 @RequestMapping("/me")

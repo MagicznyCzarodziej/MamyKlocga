@@ -14,10 +14,9 @@ export const RoundWaitingToStart = (props: Props) => {
   const round = game.currentRound;
 
   const getRoleDependentContent = () => {
-    if (round.role == 'BUILDER') return <WordsList words={game.words} />;
 
     return <>
-      <div>Zgadujesz!</div>
+      {round.role == 'BUILDER' ? <WordsList words={game.words} /> : <div>Zgadujesz!</div>}
       {room.isRoomOwner && <StartRoundButton roomCode={room.code} />}
     </>;
   };

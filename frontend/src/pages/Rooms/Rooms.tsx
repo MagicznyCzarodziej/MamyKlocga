@@ -1,34 +1,20 @@
 import { useGetRooms } from '../../api/useGetRooms';
 import React, { useEffect, useState } from 'react';
 import { RoomEntry } from './RoomEntry';
-import { socket } from '../../socket/socket';
+import { useWatchRoomsList } from '../../api/useWatchRoomsList';
 
 export const Rooms = () => {
   const roomsQuery = useGetRooms();
+  useWatchRoomsList()
 
-  const [rooms, setRooms] = useState(roomsQuery.data?.rooms ?? []);
+  const rooms = roomsQuery.data?.rooms ?? []
 
-  useEffect(() => {
-    if (!roomsQuery.isSuccess) return;
-    setRooms(roomsQuery.data.rooms);
-  }, [roomsQuery.isSuccess]);
+  // const [rooms, setRooms] = useState(roomsQuery.data?.rooms ?? []);
 
-  useEffect(() => {
-    socket.on('NEW_ROOM', (data) => {
-      const isRoomAlreadyOnList = rooms.some((room) => room.code === data.code);
-      if (isRoomAlreadyOnList) return;
-
-      setRooms((prevRooms) => [...prevRooms, {
-        code: data.code,
-        name: data.name,
-        usersCount: data.usersCount,
-      }]);
-    });
-
-    return () => {
-      socket.off('NEW_ROOM');
-    };
-  }, []);
+  // useEffect(() => {
+  //   if (!roomsQuery.isSuccess) return;
+  //   setRooms(roomsQuery.data.rooms);
+  // }, [roomsQuery.is]);
 
   return <div>
     <div>Wpisz kod pokoju</div>
@@ -36,7 +22,7 @@ export const Rooms = () => {
     <div>
       {rooms.map((room) => <RoomEntry key={room.code} room={room} />)}
     </div>
-  </div>;
+  </div>
 };
 
 

@@ -2,29 +2,33 @@ package pl.przemyslawpitus.mamyklocga.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.przemyslawpitus.mamyklocga.domain.UserRepository
-import pl.przemyslawpitus.mamyklocga.domain.createRoomUseCase.CreateRoomUseCase
-import pl.przemyslawpitus.mamyklocga.domain.RoomRepository
-import pl.przemyslawpitus.mamyklocga.domain.bindSessionToUserUseCase.BindSessionToUserUseCase
-import pl.przemyslawpitus.mamyklocga.domain.bindSessionToUserUseCase.UserSessionBinder
-import pl.przemyslawpitus.mamyklocga.domain.endRoundsUseCase.EndRoundsUseCase
+import pl.przemyslawpitus.mamyklocga.api.rooms.DeferredResultRoomStatusController
+import pl.przemyslawpitus.mamyklocga.domain.user.UserRepository
+import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomRepository
+import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomStatusController
+import pl.przemyslawpitus.mamyklocga.domain.game.endRoundsUseCase.EndRoundsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.ChallengeProvider
 import pl.przemyslawpitus.mamyklocga.domain.game.PointsCounter
-import pl.przemyslawpitus.mamyklocga.domain.getRoomUseCase.GetRoomUseCase
-import pl.przemyslawpitus.mamyklocga.domain.getRoomsUseCase.GetRoomsUseCase
-import pl.przemyslawpitus.mamyklocga.domain.helloUseCase.HelloUseCase
-import pl.przemyslawpitus.mamyklocga.domain.joinRoomUseCase.JoinRoomUseCase
-import pl.przemyslawpitus.mamyklocga.domain.leaveRoomUseCase.LeaveRoomUseCase
-import pl.przemyslawpitus.mamyklocga.domain.setUsernameUseCase.SetUsernameUseCase
-import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.GameCreator
-import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.GameStatusPublisher
-import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.StartGameUseCase
-import pl.przemyslawpitus.mamyklocga.domain.startGameUseCase.WordsProvider
-import pl.przemyslawpitus.mamyklocga.domain.startRoundUseCase.StartRoundUseCase
+import pl.przemyslawpitus.mamyklocga.domain.rooms.getRoomUseCase.GetRoomUseCase
+import pl.przemyslawpitus.mamyklocga.domain.user.helloUseCase.HelloUseCase
+import pl.przemyslawpitus.mamyklocga.domain.rooms.joinRoomUseCase.JoinRoomUseCase
+import pl.przemyslawpitus.mamyklocga.domain.rooms.leaveRoomUseCase.LeaveRoomUseCase
+import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomsListWatchingManager
+import pl.przemyslawpitus.mamyklocga.domain.user.setUsernameUseCase.SetUsernameUseCase
+import pl.przemyslawpitus.mamyklocga.domain.game.startGameUseCase.GameCreator
+import pl.przemyslawpitus.mamyklocga.domain.game.startGameUseCase.GameStatusPublisher
+import pl.przemyslawpitus.mamyklocga.domain.game.startGameUseCase.NoOpGameStatusPublisher
+import pl.przemyslawpitus.mamyklocga.domain.game.startGameUseCase.StartGameUseCase
+import pl.przemyslawpitus.mamyklocga.domain.game.startGameUseCase.WordsProvider
+import pl.przemyslawpitus.mamyklocga.domain.game.startRoundUseCase.StartRoundUseCase
+import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomWatchingManager
+import pl.przemyslawpitus.mamyklocga.domain.rooms.createRoomUseCase.CreateRoomUseCase
+import pl.przemyslawpitus.mamyklocga.domain.rooms.getRoomUseCase.RoomToUserRoomMapper
+import pl.przemyslawpitus.mamyklocga.domain.rooms.getRoomsUseCase.GetRoomsUseCase
 import pl.przemyslawpitus.mamyklocga.infrastructure.InMemoryRoomRepository
+import pl.przemyslawpitus.mamyklocga.infrastructure.InMemoryRoomWatchingManager
+import pl.przemyslawpitus.mamyklocga.infrastructure.InMemoryRoomsWatchingManager
 import pl.przemyslawpitus.mamyklocga.infrastructure.InMemoryUserRepository
-import pl.przemyslawpitus.mamyklocga.infrastructure.sockets.SocketIoGameStatusPublisher
-import pl.przemyslawpitus.mamyklocga.infrastructure.sockets.SocketIoServer
 
 @Configuration
 @Suppress("TooManyFunctions")
@@ -64,10 +68,11 @@ class DomainConfig {
         roomRoomRepository: RoomRepository,
         userRepository: UserRepository,
         pointsCounter: PointsCounter,
+        roomToUserRoomMapper: RoomToUserRoomMapper
     ) = GetRoomUseCase(
         roomRepository = roomRoomRepository,
         userRepository = userRepository,
-        pointsCounter = pointsCounter,
+        roomToUserRoomMapper = roomToUserRoomMapper,
     )
 
     @Bean
@@ -76,11 +81,14 @@ class DomainConfig {
         userRepository: UserRepository,
         leaveRoomUseCase: LeaveRoomUseCase,
         gameStatusPublisher: GameStatusPublisher,
+        roomsListWatchingManager: RoomsListWatchingManager,
+        getRoomsUseCase: GetRoomsUseCase,
     ) = CreateRoomUseCase(
         roomRepository = roomRepository,
         userRepository = userRepository,
         leaveRoomUseCase = leaveRoomUseCase,
-        gameStatusPublisher = gameStatusPublisher,
+        roomsListWatchingManager = roomsListWatchingManager,
+        getRoomsUseCase = getRoomsUseCase,
     )
 
     @Bean
@@ -88,34 +96,34 @@ class DomainConfig {
         roomRepository: RoomRepository,
         userRepository: UserRepository,
         leaveRoomUseCase: LeaveRoomUseCase,
-        gameStatusPublisher: GameStatusPublisher,
+        roomWatchingManager: RoomWatchingManager,
     ) = JoinRoomUseCase(
         roomRepository = roomRepository,
         userRepository = userRepository,
         leaveRoomUseCase = leaveRoomUseCase,
-        gameStatusPublisher = gameStatusPublisher,
+        roomWatchingManager = roomWatchingManager,
     )
 
     @Bean
     fun leaveRoomUseCase(
         roomRepository: RoomRepository,
         userRepository: UserRepository,
-        gameStatusPublisher: GameStatusPublisher,
+        roomWatchingManager: RoomWatchingManager,
     ) = LeaveRoomUseCase(
         roomRepository = roomRepository,
         userRepository = userRepository,
-        gameStatusPublisher = gameStatusPublisher,
+        roomWatchingManager = roomWatchingManager,
     )
 
     @Bean
     fun startGameUseCase(
         roomRepository: RoomRepository,
         gameCreator: GameCreator,
-        gameStatusPublisher: GameStatusPublisher,
+        roomWatchingManager: RoomWatchingManager,
     ) = StartGameUseCase(
         roomRepository = roomRepository,
         gameCreator = gameCreator,
-        gameStatusPublisher = gameStatusPublisher,
+        roomWatchingManager = roomWatchingManager,
     )
 
     @Bean
@@ -134,39 +142,42 @@ class DomainConfig {
     )
 
     @Bean
-    fun gameStatusPublisher(
-        socketIoServer: SocketIoServer,
-    ) = SocketIoGameStatusPublisher(
-        socketIoServer = socketIoServer,
-    )
-
-    @Bean
-    fun bindSessionToUserUseCase(
-        userRepository: UserRepository,
-        roomRepository: RoomRepository,
-        userSessionBinder: UserSessionBinder,
-        gameStatusPublisher: GameStatusPublisher,
-    ) = BindSessionToUserUseCase(
-        userRepository = userRepository,
-        roomRepository = roomRepository,
-        userSessionBinder = userSessionBinder,
-        gameStatusPublisher = gameStatusPublisher,
-    )
-
-    @Bean
     fun endRoundsUseCase(
         roomRepository: RoomRepository,
-        gameStatusPublisher: GameStatusPublisher
+        roomWatchingManager: RoomWatchingManager,
     ) = EndRoundsUseCase(
         roomRepository = roomRepository,
-        gameStatusPublisher = gameStatusPublisher,
+        roomWatchingManager = roomWatchingManager,
     )
+
     @Bean
     fun startRoundUseCase(
         roomRepository: RoomRepository,
-        gameStatusPublisher: GameStatusPublisher
+        roomWatchingManager: RoomWatchingManager,
     ) = StartRoundUseCase(
         roomRepository = roomRepository,
-        gameStatusPublisher = gameStatusPublisher,
+        roomWatchingManager = roomWatchingManager,
     )
+
+    @Bean
+    fun roomToUserRoomMapper(
+        pointsCounter: PointsCounter,
+    ) = RoomToUserRoomMapper(
+        pointsCounter = pointsCounter,
+    )
+
+    @Bean
+    fun gameStatusPublisher(): GameStatusPublisher = NoOpGameStatusPublisher()
+
+    @Bean
+    fun roomStatusController(): RoomStatusController =
+        DeferredResultRoomStatusController()
+
+    @Bean
+    fun roomsListWatchingManager(): RoomsListWatchingManager =
+        InMemoryRoomsWatchingManager()
+
+    @Bean
+    fun roomWatchingManager(): RoomWatchingManager =
+        InMemoryRoomWatchingManager()
 }
