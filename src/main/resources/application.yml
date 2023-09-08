@@ -9,6 +9,3 @@ spring:
 
 server:
   port: 24003
-
-socket-io:
-  port: 48207

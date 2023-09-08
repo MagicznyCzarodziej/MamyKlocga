@@ -1,6 +1,6 @@
 import { Home } from '../pages/Home/Home';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useHello } from '../api/useHello';
 import { Room } from '../pages/Room/Room';
 import { UserContext } from '../context/UserContext';
@@ -8,7 +8,6 @@ import { Rooms } from '../pages/Rooms/Rooms';
 
 export const App = () => {
   const helloMutation = useHello();
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
   const user = useContext(UserContext);
 
   useEffect(() => {
