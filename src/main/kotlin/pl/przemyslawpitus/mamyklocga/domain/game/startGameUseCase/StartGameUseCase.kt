@@ -28,7 +28,8 @@ class StartGameUseCase(
         val updatedRoom = room.startGame()
 
         val savedRoom = roomRepository.saveRoom(updatedRoom)
-
+        println(savedRoom)
+        println(savedRoom.game?.currentRound?.builds)
         roomWatchingManager.publish(
             RoomChangedEvent(
                 room = savedRoom

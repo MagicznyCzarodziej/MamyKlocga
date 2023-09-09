@@ -22,7 +22,7 @@ class GameCreator(
         return Game(
             roundsTotal = getTotalRounds(users),
             currentRound = round,
-            rounds = listOf(round),
+            pastRounds = listOf(round),
             wordsPerUser = getWordsPerUser(users),
         )
     }
@@ -46,7 +46,7 @@ class GameCreator(
             guesser = guesser,
             builds = builds,
             challenge = challengeProvider.getRandomChallenge(),
-            timeTotal = 1.toDuration(DurationUnit.MINUTES),
+            timeTotal = 10.toDuration(DurationUnit.SECONDS),
             startedAt = null,
             isEnded = false
         )
@@ -57,7 +57,9 @@ class GameCreator(
             Build(
                 builder = it,
                 hasPassedChallenge = false,
-                correctAnswerBy = null
+                hasRatedGuesserGuess = false,
+                hasRatedStolenGuess = false,
+                correctAnswerBy = null,
             )
         }
     }

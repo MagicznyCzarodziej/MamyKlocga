@@ -4,7 +4,7 @@ import pl.przemyslawpitus.mamyklocga.domain.user.UserId
 
 class PointsCounter {
     fun countPointsForGame(game: Game): Map<UserId, Int> {
-        return game.rounds
+        return (listOf(game.currentRound) + game.pastRounds)
             .map { countPointsForRound(it) }
             .flatMap { it.entries }
             .associate { it.toPair() }

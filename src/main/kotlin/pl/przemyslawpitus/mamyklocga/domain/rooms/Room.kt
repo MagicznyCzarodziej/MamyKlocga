@@ -1,9 +1,11 @@
 package pl.przemyslawpitus.mamyklocga.domain.rooms
 
+import arrow.optics.optics
 import pl.przemyslawpitus.mamyklocga.domain.user.User
 import pl.przemyslawpitus.mamyklocga.domain.game.Game
 import java.time.Instant
 
+@optics
 data class Room(
     val roomId: RoomId,
     val code: String,
@@ -16,7 +18,9 @@ data class Room(
     val createdAt: Instant = Instant.now(),
     val updatedAt: Instant = Instant.now(),
     val version: Long = 0,
-)
+) {
+    companion object
+}
 
 enum class RoomVisibility {
     PUBLIC, PRIVATE

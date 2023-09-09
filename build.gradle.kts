@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "3.1.0"
     id("io.spring.dependency-management") version "1.1.0"
+    id("com.google.devtools.ksp") version "1.8.21-1.0.11"
     kotlin("jvm") version "1.8.21"
     kotlin("plugin.spring") version "1.8.21"
 }
@@ -21,6 +22,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("io.arrow-kt:arrow-optics:1.2.0")
+    ksp("io.arrow-kt:arrow-optics-ksp-plugin:1.2.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

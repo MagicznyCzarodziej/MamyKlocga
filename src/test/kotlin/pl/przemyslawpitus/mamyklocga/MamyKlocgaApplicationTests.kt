@@ -9,5 +9,4 @@ class MamyKlocgaApplicationTests {
     @Test
     fun contextLoads() {
     }
-
 }

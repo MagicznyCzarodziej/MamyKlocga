@@ -31,5 +31,17 @@ interface Round {
   guesser: User;
   challenge: string;
   endsAt: string | null;
-  state: 'WAITING_TO_START' | 'IN_PROGRESS' | 'ENDED'
+  state: 'WAITING_TO_START' | 'IN_PROGRESS' | 'ENDED';
+
+  users: RoundUser[];
+  hasRatedGuesserGuess: boolean;
+  hasRatedStolenGuess: boolean;
+}
+
+interface RoundUser {
+  userId: string;
+  username: string;
+  role: 'GUESSER' | 'BUILDER';
+  hasPassedChallenge: boolean;
+  hasGuessedCorrectly: boolean;
 }

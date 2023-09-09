@@ -15,7 +15,7 @@ import pl.przemyslawpitus.mamyklocga.domain.rooms.createRoomUseCase.CreateRoomUs
 import pl.przemyslawpitus.mamyklocga.domain.rooms.Room
 import pl.przemyslawpitus.mamyklocga.domain.user.User
 import pl.przemyslawpitus.mamyklocga.domain.rooms.getRoomUseCase.GetRoomUseCase
-import pl.przemyslawpitus.mamyklocga.domain.rooms.getRoomUseCase.UserRoom
+import pl.przemyslawpitus.mamyklocga.domain.rooms.UserRoom
 import pl.przemyslawpitus.mamyklocga.domain.rooms.getRoomsUseCase.GetRoomsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.rooms.joinRoomUseCase.JoinRoomUseCase
 
@@ -115,35 +115,6 @@ private fun Room.toRoomResponse() = RoomResponse(
     usersCount = this.users.size,
 )
 
-data class GetRoomResponse(
-    val code: String,
-    val name: String,
-    val isRoomOwner: Boolean,
-    val users: List<User>,
-    val state: String,
-    val game: Game?,
-) {
-    data class User(
-        val username: String,
-    )
-
-    data class Game(
-        val roundsTotal: Int,
-        val currentRound: Round?,
-        val myPoints: Int,
-        val words: List<String>,
-    )
-
-    data class Round(
-        val roundNumber: Int,
-        val role: String,
-        val guesser: User,
-        val challenge: String,
-        val endsAt: String?,
-        val state: String,
-    )
-}
-
 fun UserRoom.toGetRoomResponse() = GetRoomResponse(
     code = this.code,
     name = this.name,
@@ -166,9 +137,20 @@ private fun UserRoom.UserGame.toGetRoomGame() = GetRoomResponse.Game(
 
 private fun UserRoom.UserRound.toGetRoomRound() = GetRoomResponse.Round(
     roundNumber = this.roundNumber,
+    users = this.users.map { it.toGetRoomRoundUser() },
     role = this.role.name,
     guesser = this.guesser.toGetRoomUser(),
     challenge = this.challenge.text,
     endsAt = this.endsAt?.toString(),
     state = this.state.name,
+    hasRatedGuesserGuess = this.hasRatedGuesserGuess,
+    hasRatedStolenGuess = this.hasRatedStolenGuess,
+)
+
+private fun UserRoom.RoundUser.toGetRoomRoundUser() = GetRoomResponse.RoundUser(
+    userId = this.user.userId.value,
+    username = this.user.requiredUsername,
+    role = this.role.name,
+    hasPassedChallenge = this.hasPassedChallenge,
+    hasGuessedCorrectly = this.hasGuessedCorrectly,
 )

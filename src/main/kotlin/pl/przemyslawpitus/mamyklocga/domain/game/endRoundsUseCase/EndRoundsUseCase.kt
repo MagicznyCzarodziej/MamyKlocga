@@ -40,13 +40,10 @@ class EndRoundsUseCase(
 
 private fun Room.endCurrentRound(): Room {
     val game = checkNotNull(this.game) { "Game should not be null when trying to end active round" }
-    val currentRound = checkNotNull(game.currentRound) {
-        "Current round should not be null when trying to end active round"
-    }
 
     return this.copy(
         game = game.copy(
-            currentRound = currentRound.copy(
+            currentRound = game.currentRound.copy(
                 isEnded = true,
             )
         ),

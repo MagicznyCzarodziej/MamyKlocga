@@ -1,13 +1,11 @@
 package pl.przemyslawpitus.mamyklocga.domain.rooms.getRoomUseCase
 
-import pl.przemyslawpitus.mamyklocga.domain.game.Challenge
 import pl.przemyslawpitus.mamyklocga.domain.game.Game
 import pl.przemyslawpitus.mamyklocga.domain.game.PointsCounter
 import pl.przemyslawpitus.mamyklocga.domain.game.Round
 import pl.przemyslawpitus.mamyklocga.domain.rooms.Room
-import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomState
+import pl.przemyslawpitus.mamyklocga.domain.rooms.UserRoom
 import pl.przemyslawpitus.mamyklocga.domain.user.User
-import java.time.Instant
 import kotlin.time.toJavaDuration
 
 class RoomToUserRoomMapper(
@@ -36,7 +34,7 @@ class RoomToUserRoomMapper(
         return UserRoom.UserGame(
             roundsTotal = game.roundsTotal,
             currentRound = mapCurrentRound(
-                currentRound = game.currentRound!!,
+                currentRound = game.currentRound,
                 user = user,
             ),
             myPoints = userPoints,
@@ -44,56 +42,53 @@ class RoomToUserRoomMapper(
         )
     }
 
-    private fun mapCurrentRound(currentRound: Round, user: User) = UserRoom.UserRound(
-        roundNumber = currentRound.roundNumber,
-        role = getUserRole(
-            round = currentRound,
-            user = user
-        ),
-        guesser = currentRound.guesser,
-        challenge = currentRound.challenge,
-        endsAt = currentRound.startedAt?.let { it + currentRound.timeTotal.toJavaDuration() },
-        state =
-        if (currentRound.isEnded) UserRoom.UserRoundState.ENDED
-        else if (currentRound.startedAt != null) UserRoom.UserRoundState.IN_PROGRESS
-        else UserRoom.UserRoundState.WAITING_TO_START
-    )
+    private fun mapCurrentRound(currentRound: Round, user: User): UserRoom.UserRound {
+        val build = currentRound.getBuildOfUser(user)
+
+        return UserRoom.UserRound(
+            roundNumber = currentRound.roundNumber,
+            builds = currentRound.builds,
+            role = getUserRole(round = currentRound, user = user),
+            guesser = currentRound.guesser,
+            challenge = currentRound.challenge,
+            endsAt = getEndAt(round = currentRound),
+            state = getRoundState(round = currentRound),
+
+            users = getRoundUsers(round = currentRound),
+            hasRatedGuesserGuess = build?.hasRatedGuesserGuess ?: false,
+            hasRatedStolenGuess = build?.hasRatedStolenGuess ?: false,
+        )
+    }
+
+    private fun getRoundUsers(round: Round): Set<UserRoom.RoundUser> {
+        val guesser = UserRoom.RoundUser(
+            user = round.guesser,
+            role = UserRoom.UserRole.GUESSER,
+            hasPassedChallenge = false,
+            hasGuessedCorrectly = round.builds.also {
+                println(it)
+            }.any { it.correctAnswerBy == round.guesser },
+        )
+        val builders = round.builds.map {
+            UserRoom.RoundUser(
+                user = it.builder,
+                role = UserRoom.UserRole.BUILDER,
+                hasPassedChallenge = checkNotNull(round.getBuildOfUser(it.builder)).hasPassedChallenge,
+                hasGuessedCorrectly = false,
+            )
+        }
+        return setOf(guesser) + builders
+    }
 
     private fun getUserRole(round: Round, user: User) =
         if (round.guesser.userId == user.userId) UserRoom.UserRole.GUESSER
         else UserRoom.UserRole.BUILDER
-}
 
-data class UserRoom(
-    val code: String,
-    val name: String,
-    val isRoomOwner: Boolean,
-    val users: Set<User>,
-    val state: RoomState,
-    val game: UserGame?,
-) {
+    private fun getRoundState(round: Round): UserRoom.UserRoundState =
+        if (round.isEnded) UserRoom.UserRoundState.ENDED
+        else if (round.startedAt != null) UserRoom.UserRoundState.IN_PROGRESS
+        else UserRoom.UserRoundState.WAITING_TO_START
 
-    data class UserGame(
-        val roundsTotal: Int,
-        val currentRound: UserRound,
-        val myPoints: Int,
-        val words: List<String>,
-    )
-
-    data class UserRound(
-        val roundNumber: Int,
-        val role: UserRole,
-        val guesser: User,
-        val challenge: Challenge,
-        val endsAt: Instant?,
-        val state: UserRoundState,
-    )
-
-    enum class UserRole {
-        BUILDER, GUESSER
-    }
-
-    enum class UserRoundState {
-        WAITING_TO_START, IN_PROGRESS, ENDED
-    }
+    private fun getEndAt(round: Round) =
+        round.startedAt?.let { it + round.timeTotal.toJavaDuration() }
 }

@@ -30,15 +30,12 @@ class StartRoundUseCase(
 
 private fun Room.startCurrentRound(): Room {
     val game = checkNotNull(this.game) { "Game should not be null when trying to end active round" }
-    val currentRound = checkNotNull(game.currentRound) {
-        "Current round should not be null when trying to end active round"
-    }
 
-    if (currentRound.isEnded) throw RuntimeException("Cannot start ended round, roomCode: ${this.code}")
+    if (game.currentRound.isEnded) throw RuntimeException("Cannot start ended round, roomCode: ${this.code}")
 
     return this.copy(
         game = game.copy(
-            currentRound = currentRound.copy(
+            currentRound = game.currentRound.copy(
                 startedAt = Instant.now(),
             )
         ),

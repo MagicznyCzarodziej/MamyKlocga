@@ -9,6 +9,7 @@ import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomStatusController
 import pl.przemyslawpitus.mamyklocga.domain.game.endRoundsUseCase.EndRoundsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.ChallengeProvider
 import pl.przemyslawpitus.mamyklocga.domain.game.PointsCounter
+import pl.przemyslawpitus.mamyklocga.domain.game.rateGuessUseCase.RateGuessUseCase
 import pl.przemyslawpitus.mamyklocga.domain.rooms.getRoomUseCase.GetRoomUseCase
 import pl.przemyslawpitus.mamyklocga.domain.user.helloUseCase.HelloUseCase
 import pl.przemyslawpitus.mamyklocga.domain.rooms.joinRoomUseCase.JoinRoomUseCase
@@ -153,6 +154,19 @@ class DomainConfig {
         roomWatchingManager: RoomWatchingManager,
     ) = StartRoundUseCase(
         roomRepository = roomRepository,
+        roomWatchingManager = roomWatchingManager,
+    )
+
+    @Bean
+    fun rateGuessUseCase(
+        roomRepository: RoomRepository,
+        userRepository: UserRepository,
+        roomToUserRoomMapper: RoomToUserRoomMapper,
+        roomWatchingManager: RoomWatchingManager,
+    ) = RateGuessUseCase(
+        roomRepository = roomRepository,
+        userRepository = userRepository,
+        roomToUserRoomMapper = roomToUserRoomMapper,
         roomWatchingManager = roomWatchingManager,
     )
 
