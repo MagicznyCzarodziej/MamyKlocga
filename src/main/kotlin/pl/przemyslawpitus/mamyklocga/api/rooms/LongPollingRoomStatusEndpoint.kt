@@ -61,11 +61,16 @@ class LongPollingRoomStatusEndpoint(
     ) : LongPollingObserver<RoomChangedEvent, GetRoomResponse>(deferredResult) {
 
         override fun onChange(event: RoomChangedEvent) {
-            val userRoom = getRoomUseCase.getRoom(
-                roomCode = event.room.code,
-                userId = userId,
-            )
-            deferredResult.setResult(userRoom.toGetRoomResponse())
+            try {
+                val userRoom = getRoomUseCase.getRoom(
+                    roomCode = event.room.code,
+                    userId = userId,
+                )
+                deferredResult.setResult(userRoom.toGetRoomResponse())
+            } catch (exception: Exception) {
+                logger.error("Error while handling room changed event", exception)
+                deferredResult.setErrorResult(exception)
+            }
         }
     }
 
