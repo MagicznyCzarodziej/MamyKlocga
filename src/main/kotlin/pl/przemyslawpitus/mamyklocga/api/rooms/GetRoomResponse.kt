@@ -28,6 +28,7 @@ data class GetRoomResponse(
         val state: String,
 
         val users: List<RoundUser>,
+        val hasEveryoneRated: Boolean,
         val hasRatedGuesserGuess: Boolean,
         val hasRatedStolenGuess: Boolean,
     )

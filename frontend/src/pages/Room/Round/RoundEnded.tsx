@@ -1,6 +1,7 @@
 import { RoomResponse } from '../../../api/useGetRoom';
 import { Button } from '../../../components/Button/Button';
 import { useRateGuess } from '../../../api/useRateGuess';
+import { useNextRound } from '../../../api/useNextRound';
 
 interface Props {
   room: RoomResponse;
@@ -30,8 +31,8 @@ export const RoundEnded = (props: Props) => {
       {round.users
         .filter((user) => user.role === 'BUILDER')
         .map(user => <div key={user.username}>
-          {user.hasPassedChallenge ? "WYZWANIE ZALICZONE" : "ZALICZ WYZWANIE"} {user.username}
-      </div>)}
+          {user.hasPassedChallenge ? 'WYZWANIE ZALICZONE' : 'ZALICZ WYZWANIE'} {user.username}
+        </div>)}
     </div>;
   };
 
@@ -42,12 +43,19 @@ export const RoundEnded = (props: Props) => {
     <div>Koniec czasu!</div>
     <div>Wyzwanie: <br />{round.challenge}</div>
     {getRoleDependentContent()}
-    {room.isRoomOwner && <NextRoundButton />}
+    {
+      room.isRoomOwner
+      && game.currentRound.roundNumber < game.roundsTotal
+      && game.currentRound.hasEveryoneRated
+      && <NextRoundButton roomCode={room.code} />
+    }
   </div>;
 };
 
-const NextRoundButton = () => {
-  return <Button onClick={() => {
+const NextRoundButton = ({ roomCode }: { roomCode: string }) => {
+  const nextRoundMutation = useNextRound();
 
+  return <Button onClick={() => {
+    nextRoundMutation.mutate(roomCode);
   }}>Następna runda</Button>;
 };

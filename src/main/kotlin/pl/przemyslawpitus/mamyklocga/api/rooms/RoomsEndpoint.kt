@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pl.przemyslawpitus.mamyklocga.WithLogger
+import pl.przemyslawpitus.mamyklocga.domain.game.Build
 import pl.przemyslawpitus.mamyklocga.domain.user.UserId
 import pl.przemyslawpitus.mamyklocga.domain.rooms.createRoomUseCase.CreateRoomUseCase
 import pl.przemyslawpitus.mamyklocga.domain.rooms.Room
@@ -135,17 +136,27 @@ private fun UserRoom.UserGame.toGetRoomGame() = GetRoomResponse.Game(
     words = this.words,
 )
 
-private fun UserRoom.UserRound.toGetRoomRound() = GetRoomResponse.Round(
-    roundNumber = this.roundNumber,
-    users = this.users.map { it.toGetRoomRoundUser() },
-    role = this.role.name,
-    guesser = this.guesser.toGetRoomUser(),
-    challenge = this.challenge.text,
-    endsAt = this.endsAt?.toString(),
-    state = this.state.name,
-    hasRatedGuesserGuess = this.hasRatedGuesserGuess,
-    hasRatedStolenGuess = this.hasRatedStolenGuess,
-)
+private fun UserRoom.UserRound.toGetRoomRound(): GetRoomResponse.Round {
+    val hasEveryoneRated = this.builds.all {
+        it.hasUserRatedEveryoneGuesses()
+    }
+
+    return GetRoomResponse.Round(
+        roundNumber = this.roundNumber,
+        role = this.role.name,
+        guesser = this.guesser.toGetRoomUser(),
+        challenge = this.challenge.text,
+        endsAt = this.endsAt?.toString(),
+        state = this.state.name,
+        users = this.users.map { it.toGetRoomRoundUser() },
+        hasEveryoneRated = hasEveryoneRated,
+        hasRatedGuesserGuess = this.hasRatedGuesserGuess,
+        hasRatedStolenGuess = this.hasRatedStolenGuess,
+    )
+}
+
+private fun Build.hasUserRatedEveryoneGuesses () =
+    this.correctAnswerBy != null || (this.hasRatedGuesserGuess && this.hasRatedStolenGuess)
 
 private fun UserRoom.RoundUser.toGetRoomRoundUser() = GetRoomResponse.RoundUser(
     userId = this.user.userId.value,

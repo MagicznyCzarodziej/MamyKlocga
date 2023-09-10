@@ -9,6 +9,9 @@ import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomStatusController
 import pl.przemyslawpitus.mamyklocga.domain.game.endRoundsUseCase.EndRoundsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.ChallengeProvider
 import pl.przemyslawpitus.mamyklocga.domain.game.PointsCounter
+import pl.przemyslawpitus.mamyklocga.domain.game.RoundCreator
+import pl.przemyslawpitus.mamyklocga.domain.game.getPointsUseCase.GetPointsUseCase
+import pl.przemyslawpitus.mamyklocga.domain.game.nextRoundUseCase.NextRoundUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.rateGuessUseCase.RateGuessUseCase
 import pl.przemyslawpitus.mamyklocga.domain.rooms.getRoomUseCase.GetRoomUseCase
 import pl.przemyslawpitus.mamyklocga.domain.user.helloUseCase.HelloUseCase
@@ -132,11 +135,18 @@ class DomainConfig {
 
     @Bean
     fun gameCreator(
-        challengeProvider: ChallengeProvider,
         wordsProvider: WordsProvider,
+        roundCreator: RoundCreator,
     ) = GameCreator(
-        challengeProvider = challengeProvider,
         wordsProvider = wordsProvider,
+        roundCreator = roundCreator,
+    )
+
+    @Bean
+    fun roundCreator(
+        challengeProvider: ChallengeProvider
+    ) = RoundCreator(
+        challengeProvider = challengeProvider
     )
 
     @Bean
@@ -168,6 +178,26 @@ class DomainConfig {
         userRepository = userRepository,
         roomToUserRoomMapper = roomToUserRoomMapper,
         roomWatchingManager = roomWatchingManager,
+    )
+
+    @Bean
+    fun nextRoundUseCase(
+        roomRepository: RoomRepository,
+        roomWatchingManager: RoomWatchingManager,
+        roundCreator: RoundCreator,
+    ) = NextRoundUseCase(
+        roomRepository = roomRepository,
+        roomWatchingManager = roomWatchingManager,
+        roundCreator = roundCreator,
+    )
+
+    @Bean
+    fun getPointsUseCase(
+        roomRepository: RoomRepository,
+        pointsCounter: PointsCounter,
+    ) = GetPointsUseCase(
+        roomRepository,
+        pointsCounter = pointsCounter,
     )
 
     @Bean

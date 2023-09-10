@@ -34,6 +34,7 @@ interface Round {
   state: 'WAITING_TO_START' | 'IN_PROGRESS' | 'ENDED';
 
   users: RoundUser[];
+  hasEveryoneRated: boolean;
   hasRatedGuesserGuess: boolean;
   hasRatedStolenGuess: boolean;
 }

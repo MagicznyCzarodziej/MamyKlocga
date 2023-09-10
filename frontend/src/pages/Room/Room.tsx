@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { RoomLobby } from './RoomLobby';
 import { RoomInGame } from './RoomInGame';
 import { useWatchRoom } from '../../api/useWatchRoom';
+import { RoomPunctuation } from './RoomPunctuation';
 
 export const Room = () => {
   const { roomCode } = useParams();
@@ -18,6 +19,10 @@ export const Room = () => {
 
     case 'IN_GAME': {
       return <RoomInGame room={roomQuery.data} />;
+    }
+
+    case 'GAME_ENDED': {
+      return <RoomPunctuation room={roomQuery.data} />
     }
   }
 

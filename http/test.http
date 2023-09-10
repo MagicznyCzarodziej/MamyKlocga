@@ -61,13 +61,19 @@ Accept: application/json
 Cookie: userId=e072cdb1-2780-4676-a4c2-731b4e172e57
 
 ### Watch room (long polling)
-GET http://localhost:24003/api/rooms/2323/watch
+GET http://localhost:24003/api/rooms/2238/watch
 Content-Type: application/json
 Accept: application/json
-Cookie: userId=e2ee15f9-cdd0-4dfd-bfa3-5c8abbd8bf0b
+Cookie: userId=add1c597-5b18-424a-a6d6-433f9229557b
 
 ### Watch rooms (long polling)
 GET http://localhost:24003/api/rooms/watch
 Content-Type: application/json
 Accept: application/json
-Cookie: userId=e2ee15f9-cdd0-4dfd-bfa3-5c8abbd8bf0b
+Cookie: userId=25ea5956-3013-42bd-a07a-feb4134f3a10
+
+### Get points
+GET http://localhost:24003/api/rooms/3923/points
+Content-Type: application/json
+Accept: application/json
+Cookie: userId=8459a08f-feb8-4e0b-8b9b-4ee49c75892c

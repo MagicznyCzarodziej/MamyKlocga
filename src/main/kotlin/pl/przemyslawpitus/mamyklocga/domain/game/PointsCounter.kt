@@ -7,7 +7,8 @@ class PointsCounter {
         return (listOf(game.currentRound) + game.pastRounds)
             .map { countPointsForRound(it) }
             .flatMap { it.entries }
-            .associate { it.toPair() }
+            .groupBy({ it.key }, {it.value})
+            .mapValues { it.value.sum() }
             .withDefault { 0 }
     }
 
@@ -15,7 +16,8 @@ class PointsCounter {
         return round.builds
             .map { countPointsForBuild(it) }
             .flatMap { it.entries }
-            .associate { it.toPair() }
+            .groupBy({ it.key }, {it.value})
+            .mapValues { it.value.sum() }
     }
 
     private fun countPointsForBuild(build: Build): Map<UserId, Int> {
