@@ -25,11 +25,14 @@ class StartGameUseCase(
             throw RuntimeException("User ${userId.value} is not owner of room ${room.roomId.value}")
         }
 
+        if (room.users.size < 2) {
+            throw RuntimeException("Cannot start a game without at least 2 users. Room ${room.roomId.value}")
+        }
+
         val updatedRoom = room.startGame()
 
         val savedRoom = roomRepository.saveRoom(updatedRoom)
-        println(savedRoom)
-        println(savedRoom.game?.currentRound?.builds)
+
         roomWatchingManager.publish(
             RoomChangedEvent(
                 room = savedRoom

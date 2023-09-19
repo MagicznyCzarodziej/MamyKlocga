@@ -2,6 +2,7 @@ import { RoomResponse } from '../../../api/useGetRoom';
 import { Button } from '../../../components/Button/Button';
 import { useRateGuess } from '../../../api/useRateGuess';
 import { useNextRound } from '../../../api/useNextRound';
+import { useEndGame } from '../../../api/useEndGame';
 
 interface Props {
   room: RoomResponse;
@@ -49,6 +50,12 @@ export const RoundEnded = (props: Props) => {
       && game.currentRound.hasEveryoneRated
       && <NextRoundButton roomCode={room.code} />
     }
+    {
+      room.isRoomOwner
+      && game.currentRound.roundNumber >= game.roundsTotal
+      && game.currentRound.hasEveryoneRated
+      && <EndGameButton roomCode={room.code} />
+    }
   </div>;
 };
 
@@ -58,4 +65,12 @@ const NextRoundButton = ({ roomCode }: { roomCode: string }) => {
   return <Button onClick={() => {
     nextRoundMutation.mutate(roomCode);
   }}>Następna runda</Button>;
+};
+
+const EndGameButton = ({ roomCode }: { roomCode: string }) => {
+  const endGameMutation = useEndGame();
+
+  return <Button onClick={() => {
+    endGameMutation.mutate(roomCode);
+  }}>Podsumowanie</Button>;
 };

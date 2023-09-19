@@ -32,6 +32,10 @@ class JoinRoomUseCase(
             throw RuntimeException("User ${userId.value} cant join room $roomCode, because game has already started")
         }
 
+        if (user.userId in room.users.map { it.userId }) {
+            return
+        }
+
         leaveRoomUseCase.leaveAllRooms(user)
 
         val updatedRoom = room.addUser(user)

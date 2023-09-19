@@ -10,6 +10,7 @@ import pl.przemyslawpitus.mamyklocga.domain.game.endRoundsUseCase.EndRoundsUseCa
 import pl.przemyslawpitus.mamyklocga.domain.game.ChallengeProvider
 import pl.przemyslawpitus.mamyklocga.domain.game.PointsCounter
 import pl.przemyslawpitus.mamyklocga.domain.game.RoundCreator
+import pl.przemyslawpitus.mamyklocga.domain.game.endGameUseCase.EndGameUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.getPointsUseCase.GetPointsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.nextRoundUseCase.NextRoundUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.rateGuessUseCase.RateGuessUseCase
@@ -27,6 +28,7 @@ import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomWatchingManager
 import pl.przemyslawpitus.mamyklocga.domain.rooms.createRoomUseCase.CreateRoomUseCase
 import pl.przemyslawpitus.mamyklocga.domain.rooms.getRoomUseCase.RoomToUserRoomMapper
 import pl.przemyslawpitus.mamyklocga.domain.rooms.getRoomsUseCase.GetRoomsUseCase
+import pl.przemyslawpitus.mamyklocga.domain.rooms.updateRoomsListUseCase.UpdateRoomsListUseCase
 import pl.przemyslawpitus.mamyklocga.infrastructure.InMemoryRoomRepository
 import pl.przemyslawpitus.mamyklocga.infrastructure.InMemoryRoomWatchingManager
 import pl.przemyslawpitus.mamyklocga.infrastructure.InMemoryRoomsWatchingManager
@@ -82,14 +84,12 @@ class DomainConfig {
         roomRepository: RoomRepository,
         userRepository: UserRepository,
         leaveRoomUseCase: LeaveRoomUseCase,
-        roomsListWatchingManager: RoomsListWatchingManager,
-        getRoomsUseCase: GetRoomsUseCase,
+        roomWatchingManager: RoomWatchingManager,
     ) = CreateRoomUseCase(
         roomRepository = roomRepository,
         userRepository = userRepository,
         leaveRoomUseCase = leaveRoomUseCase,
-        roomsListWatchingManager = roomsListWatchingManager,
-        getRoomsUseCase = getRoomsUseCase,
+        roomWatchingManager = roomWatchingManager,
     )
 
     @Bean
@@ -125,6 +125,17 @@ class DomainConfig {
         roomRepository = roomRepository,
         gameCreator = gameCreator,
         roomWatchingManager = roomWatchingManager,
+    )
+
+    @Bean
+    fun updateRoomsListUseCase(
+        roomWatchingManager: RoomWatchingManager,
+        roomsListWatchingManager: RoomsListWatchingManager,
+        getRoomsUseCase: GetRoomsUseCase,
+    ) = UpdateRoomsListUseCase(
+        roomWatchingManager = roomWatchingManager,
+        roomsListWatchingManager = roomsListWatchingManager,
+        getRoomsUseCase = getRoomsUseCase,
     )
 
     @Bean
@@ -198,6 +209,15 @@ class DomainConfig {
     ) = GetPointsUseCase(
         roomRepository,
         pointsCounter = pointsCounter,
+    )
+
+    @Bean
+    fun endGameUseCase(
+        roomRepository: RoomRepository,
+        roomWatchingManager: RoomWatchingManager,
+    ) = EndGameUseCase(
+        roomRepository = roomRepository,
+        roomWatchingManager = roomWatchingManager,
     )
 
     @Bean

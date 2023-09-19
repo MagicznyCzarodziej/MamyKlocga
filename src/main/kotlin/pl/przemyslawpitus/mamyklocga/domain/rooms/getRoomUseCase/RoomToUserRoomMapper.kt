@@ -65,9 +65,7 @@ class RoomToUserRoomMapper(
             user = round.guesser,
             role = UserRoom.UserRole.GUESSER,
             hasPassedChallenge = false,
-            hasGuessedCorrectly = round.builds.also {
-                println(it)
-            }.any { it.correctAnswerBy == round.guesser },
+            hasGuessedCorrectly = round.builds.any { it.correctAnswerBy == round.guesser },
         )
         val builders = round.builds.map {
             UserRoom.RoundUser(

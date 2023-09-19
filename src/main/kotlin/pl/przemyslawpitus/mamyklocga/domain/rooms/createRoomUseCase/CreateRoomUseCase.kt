@@ -2,15 +2,14 @@ package pl.przemyslawpitus.mamyklocga.domain.rooms.createRoomUseCase
 
 import pl.przemyslawpitus.mamyklocga.WithLogger
 import pl.przemyslawpitus.mamyklocga.domain.rooms.Room
+import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomChangedEvent
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomId
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomRepository
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomVisibility
+import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomWatchingManager
 import pl.przemyslawpitus.mamyklocga.domain.user.UserId
 import pl.przemyslawpitus.mamyklocga.domain.user.UserRepository
-import pl.przemyslawpitus.mamyklocga.domain.rooms.getRoomsUseCase.GetRoomsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.rooms.leaveRoomUseCase.LeaveRoomUseCase
-import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomsListChangedEvent
-import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomsListWatchingManager
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.random.nextInt
@@ -19,8 +18,7 @@ class CreateRoomUseCase(
     private val roomRepository: RoomRepository,
     private val userRepository: UserRepository,
     private val leaveRoomUseCase: LeaveRoomUseCase,
-    private val getRoomsUseCase: GetRoomsUseCase,
-    private val roomsListWatchingManager: RoomsListWatchingManager,
+    private val roomWatchingManager: RoomWatchingManager,
 ) {
     fun createRoom(
         roomName: String,
@@ -41,11 +39,7 @@ class CreateRoomUseCase(
 
         val savedRoom = roomRepository.saveRoom(room)
 
-        roomsListWatchingManager.publish(
-            RoomsListChangedEvent(
-                rooms = getRoomsUseCase.getPublicRooms(),
-            )
-        )
+        roomWatchingManager.publish(RoomChangedEvent(savedRoom))
 
         logger.info(
             "Created new room, code: ${savedRoom.code}, roomId: ${savedRoom.roomId.value}" +

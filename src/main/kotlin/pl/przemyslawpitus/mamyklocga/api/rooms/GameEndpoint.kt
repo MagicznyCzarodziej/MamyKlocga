@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pl.przemyslawpitus.mamyklocga.WithLogger
+import pl.przemyslawpitus.mamyklocga.domain.game.endGameUseCase.EndGameUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.getPointsUseCase.GetPointsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.getPointsUseCase.UserPoints
 import pl.przemyslawpitus.mamyklocga.domain.game.nextRoundUseCase.NextRoundUseCase
@@ -25,6 +26,7 @@ class GameEndpoint(
     private val rateGuessUseCase: RateGuessUseCase,
     private val nextRoundUseCase: NextRoundUseCase,
     private val getPointsUseCase: GetPointsUseCase,
+    private val endGameUseCase: EndGameUseCase,
 ) {
     @PostMapping("/{roomCode}/start")
     fun startGame(
@@ -38,7 +40,7 @@ class GameEndpoint(
             roomCode = roomCode,
         )
 
-        return ResponseEntity.ok().body(Unit)
+        return ResponseEntity.ok().build<Unit>()
     }
 
     @PostMapping("/{roomCode}/startRound")
@@ -53,7 +55,7 @@ class GameEndpoint(
             userId = UserId(userId),
         )
 
-        return ResponseEntity.ok().body(Unit)
+        return ResponseEntity.ok().build<Unit>()
     }
 
     @PostMapping("/{roomCode}/nextRound")
@@ -68,7 +70,7 @@ class GameEndpoint(
             userId = UserId(userId),
         )
 
-        return ResponseEntity.ok().body(Unit)
+        return ResponseEntity.ok().build<Unit>()
     }
 
     @PostMapping("/{roomCode}/rate-guess/{rate}")
@@ -80,7 +82,7 @@ class GameEndpoint(
         logger.info("Rate guess in room roomCode: $roomCode, userId: $userId")
 
         if (rate !in listOf("yes", "no")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Unit)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build<Unit>()
         }
 
         val hasGuesserGuessedCorrectly = rate == "yes"
@@ -94,8 +96,23 @@ class GameEndpoint(
         return ResponseEntity.ok().body(room.toGetRoomResponse()) // TODO Return nothing - client is watching the room
     }
 
-    @GetMapping("/{roomCode}/points")
+    @PostMapping("/{roomCode}/end-game")
     fun getPoints(
+        @CookieValue userId: String,
+        @PathVariable roomCode: String,
+    ): ResponseEntity<*> {
+        logger.info("End game for room roomCode: $roomCode, userId: $userId")
+
+        endGameUseCase.endGame(
+            roomCode = roomCode,
+            userId = UserId(userId),
+        )
+
+        return ResponseEntity.ok().build<Unit>()
+    }
+
+    @GetMapping("/{roomCode}/points")
+    fun endGame(
         @CookieValue userId: String,
         @PathVariable roomCode: String,
     ): ResponseEntity<*> {

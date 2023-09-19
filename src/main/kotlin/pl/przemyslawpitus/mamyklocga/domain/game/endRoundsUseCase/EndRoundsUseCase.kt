@@ -18,14 +18,7 @@ class EndRoundsUseCase(
         val roomsWithActiveRound = findRoomsToEndRound(rooms)
 
         roomsWithActiveRound.forEach {
-            val game = checkNotNull(it.game) { "Game should not be null when trying to end active round" }
-            val isGameEnded = game.currentRound.roundNumber >= game.roundsTotal
-
-            val updatedRoom = if (isGameEnded) {
-                it.endGame()
-            } else {
-                it.endCurrentRound()
-            }
+            val updatedRoom = it.endCurrentRound()
 
             val savedRoom = roomRepository.saveRoom(updatedRoom)
             roomWatchingManager.publish(
@@ -55,21 +48,6 @@ private fun Room.endCurrentRound(): Room {
             currentRound = game.currentRound.copy(
                 isEnded = true,
             )
-        ),
-        updatedAt = Instant.now(),
-    )
-}
-
-private fun Room.endGame(): Room {
-    val game = checkNotNull(this.game) { "Game should not be null when trying to end active round" }
-
-    return this.copy(
-        state = RoomState.GAME_ENDED,
-        game = game.copy(
-            currentRound = game.currentRound.copy(
-                isEnded = true,
-            )
-            // TODO: Make currentRound nullable and set it to null?
         ),
         updatedAt = Instant.now(),
     )

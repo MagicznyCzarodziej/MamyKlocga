@@ -27,7 +27,7 @@ enum class RoomVisibility {
 }
 
 enum class RoomState {
-    CREATED, IN_GAME, GAME_ENDED, ABORTED
+    CREATED, IN_GAME, GAME_ENDED, ABORTED, CLOSED
 }
 
 @JvmInline

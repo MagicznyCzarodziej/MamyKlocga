@@ -6,7 +6,7 @@ import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomRepository
 import pl.przemyslawpitus.mamyklocga.domain.user.User
 import pl.przemyslawpitus.mamyklocga.domain.user.UserId
 import pl.przemyslawpitus.mamyklocga.domain.user.UserRepository
-import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomChangedEvent
+import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomState
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomWatchingManager
 import java.time.Instant
 
@@ -16,18 +16,23 @@ class LeaveRoomUseCase(
     private val roomWatchingManager: RoomWatchingManager,
 ) {
     fun leaveRoom(room: Room, userId: UserId): Room {
-        val updatedRoom = room.removeUser(userId)
         val user = userRepository.getByUserId(userId = userId)
-
         if (user == null) throw RuntimeException("User ${userId.value} not found")
 
+        var updatedRoom = room.removeUser(userId)
+        if (updatedRoom.ownerUser.userId == user.userId) {
+            logger.info("Closing room ${room.roomId.value} ${room.code}")
+
+            updatedRoom = room.closeRoom()
+        }
         val savedRoom = roomRepository.saveRoom(updatedRoom)
 
-        roomWatchingManager.publish(
-            RoomChangedEvent(
-                room = savedRoom
-            )
-        )
+//        logger.info("Publishing event in leaving room ${room.code}")
+//        roomWatchingManager.publish(
+//            RoomChangedEvent(
+//                room = savedRoom
+//            )
+//        )
 
         logger.info("User ${userId.value} left room ${room.roomId.value}")
         return savedRoom
@@ -44,9 +49,17 @@ class LeaveRoomUseCase(
     private companion object : WithLogger()
 }
 
-fun Room.removeUser(userId: UserId): Room {
+private fun Room.removeUser(userId: UserId): Room {
     return copy(
         users = users.filter { it.userId != userId }.toSet(),
+        updatedAt = Instant.now(),
+    )
+}
+
+
+private fun Room.closeRoom(): Room {
+    return copy(
+        state = RoomState.CLOSED,
         updatedAt = Instant.now(),
     )
 }
