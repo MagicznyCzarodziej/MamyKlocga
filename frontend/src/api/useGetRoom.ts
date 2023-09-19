@@ -18,14 +18,14 @@ interface User {
   username: string;
 }
 
-interface Game {
+export interface Game {
   roundsTotal: number;
   currentRound: Round;
   myPoints: number;
   words: string[];
 }
 
-interface Round {
+export interface Round {
   roundNumber: number;
   role: 'GUESSER' | 'BUILDER';
   guesser: User;

@@ -28,12 +28,12 @@ class GameCreator(
         )
     }
 
-    private fun getTotalRounds(users: Set<User>): Int = 2
-//        if (users.size > 3) {
-//            users.size
-//        } else {
-//            users.size * 2
-//        }
+    private fun getTotalRounds(users: Set<User>): Int =
+        if (users.size > 3) {
+            users.size
+        } else {
+            users.size * 2
+        }
 
     private fun getWordsPerUser(users: Set<User>): Map<UserId, List<Word>> {
         val words = wordsProvider.getWords()

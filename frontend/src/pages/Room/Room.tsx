@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useGetRoom } from '../../api/useGetRoom';
 import { useParams } from 'react-router-dom';
-import { RoomLobby } from './RoomLobby';
+import { RoomLobby } from './RoomLobby/RoomLobby';
 import { RoomInGame } from './RoomInGame';
 import { useWatchRoom } from '../../api/useWatchRoom';
 import { RoomPunctuation } from './RoomPunctuation';

@@ -3,6 +3,8 @@ import { Button } from '../../../components/Button/Button';
 import { useRateGuess } from '../../../api/useRateGuess';
 import { useNextRound } from '../../../api/useNextRound';
 import { useEndGame } from '../../../api/useEndGame';
+import { RoundHeader } from './RoundHeader';
+import { Challenge } from './Challenge';
 
 interface Props {
   room: RoomResponse;
@@ -37,12 +39,10 @@ export const RoundEnded = (props: Props) => {
     </div>;
   };
 
-  return <div>
-    <div>Pokój {room.name} {room.code}</div>
-    <div>Runda: {round.roundNumber} / {game.roundsTotal}</div>
-    <div>Punkty: {game.myPoints}</div>
-    <div>Koniec czasu!</div>
-    <div>Wyzwanie: <br />{round.challenge}</div>
+  return <div className={`p-12`}>
+    <RoundHeader game={game} />
+    <div className={`text-center text-2xl mt-8`}>Koniec rundy!</div>
+    <Challenge challenge={round.challenge} />
     {getRoleDependentContent()}
     {
       room.isRoomOwner

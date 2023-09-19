@@ -11,7 +11,7 @@ export const Button: FunctionComponent<Props> = (props: Props) => {
 
     return <div
       onClick={onClick}
-      className={`text-2xl py-3 bg-gray-200 w-full ${light ? "font-extralight" : ""}`}
+      className={`text-2xl py-3 bg-gray-200 w-full text-center ${light ? "font-extralight" : ""}`}
     >
       {children}
     </div>

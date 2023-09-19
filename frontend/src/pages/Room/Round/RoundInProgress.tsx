@@ -1,6 +1,9 @@
 import { RoomResponse } from '../../../api/useGetRoom';
 import { Timer } from './Timer';
 import { WordsList } from './WordsList';
+import { useEffect } from 'react';
+import { Challenge } from './Challenge';
+import { RoundHeader } from './RoundHeader';
 
 interface Props {
   room: RoomResponse;
@@ -12,20 +15,19 @@ export const RoundInProgress = (props: Props) => {
   const round = game.currentRound;
 
   const getRoleDependentContent = () => {
-    if (round.role == 'BUILDER') return <WordsList words={game.words} />;
-
-    return <>
-      <div>Zgadujesz!</div>
+    if (round.role == 'BUILDER') return <>
+      <WordsList words={game.words} />
     </>;
+
+    return <div className={`text-center text-4xl mt-24`}>Zgadujesz!</div>;
   };
 
-  return <div>
-    <div>Pokój {room.name} {room.code}</div>
-    <div>Runda: {round.roundNumber} / {game.roundsTotal}</div>
-    <div>Punkty: {game.myPoints}</div>
-    <div>Zgaduje: {round.guesser.username}</div>
+  return <div className={`p-12`}>
+    <RoundHeader game={game} />
     <Timer endDate={round.endsAt!} />
-    <div>Wyzwanie: <br />{round.challenge}</div>
+    {round.role === 'BUILDER' &&
+        <div className={`text-xl text-center mt-4`}>Zgaduje: {round.guesser.username}</div>}
+    <Challenge challenge={round.challenge} />
     {getRoleDependentContent()}
   </div>;
 };

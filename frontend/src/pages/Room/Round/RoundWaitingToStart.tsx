@@ -3,6 +3,8 @@ import { Timer } from './Timer';
 import { WordsList } from './WordsList';
 import { Button } from '../../../components/Button/Button';
 import { useStartRound } from '../../../api/useStartRound';
+import { Challenge } from './Challenge';
+import { RoundHeader } from './RoundHeader';
 
 interface Props {
   room: RoomResponse;
@@ -15,17 +17,17 @@ export const RoundWaitingToStart = (props: Props) => {
 
   const getRoleDependentContent = () => {
 
-    return <>
-      {round.role == 'BUILDER' ? <WordsList words={game.words} /> : <div>Zgadujesz!</div>}
-      {room.isRoomOwner && <StartRoundButton roomCode={room.code} />}
-    </>;
+    return <div className={`mt-8`}>
+      {round.role == 'BUILDER'
+        ? <WordsList words={game.words} />
+        : <div className={`text-center text-4xl mb-12`}>Zgadujesz!</div>}
+      {room.isRoomOwner && <div className={`mt-8`}><StartRoundButton roomCode={room.code} /></div>}
+    </div>;
   };
 
-  return <div>
-    <div>Pokój {room.name} {room.code}</div>
-    <div>Runda: {round.roundNumber} / {game.roundsTotal}</div>
-    <div>Punkty: {game.myPoints}</div>
-    <div>Wyzwanie: <br />{round.challenge}</div>
+  return <div className={`p-12`}>
+    <RoundHeader game={game} />
+    <Challenge challenge={round.challenge} />
     {getRoleDependentContent()}
   </div>;
 };
@@ -38,6 +40,6 @@ const StartRoundButton = ({ roomCode }: { roomCode: string }) => {
       startRoundMutation.mutate(roomCode);
     }}
   >
-    Start round
+    Czas start!
   </Button>;
 };
