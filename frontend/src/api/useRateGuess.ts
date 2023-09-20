@@ -1,12 +1,20 @@
 import api from './api';
 import { useMutation } from '@tanstack/react-query';
 
-const rateGuess = ({ roomCode, hasGuessedCorrectly }: {
+const rateGuess = ({ roomCode, ratedUserId, hasGuessedCorrectly }: {
   roomCode: string,
+  ratedUserId: string | null,
   hasGuessedCorrectly: boolean
 }) => {
-  const rate = hasGuessedCorrectly ? 'yes' : 'no';
-  return api.post<undefined, undefined>(`/rooms/${roomCode}/rate-guess/${rate}`, undefined);
+  return api.post<undefined, Request>(`/rooms/${roomCode}/guess`, {
+    ratedUserId: ratedUserId,
+    hasGuessedCorrectly: hasGuessedCorrectly,
+  });
 };
+
+interface Request {
+  ratedUserId: string | null,
+  hasGuessedCorrectly: boolean,
+}
 
 export const useRateGuess = () => useMutation(rateGuess);

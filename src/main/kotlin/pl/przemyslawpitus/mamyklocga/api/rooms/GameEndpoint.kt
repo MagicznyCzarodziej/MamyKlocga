@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pl.przemyslawpitus.mamyklocga.WithLogger
@@ -13,6 +14,7 @@ import pl.przemyslawpitus.mamyklocga.domain.game.endGameUseCase.EndGameUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.getPointsUseCase.GetPointsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.getPointsUseCase.UserPoints
 import pl.przemyslawpitus.mamyklocga.domain.game.nextRoundUseCase.NextRoundUseCase
+import pl.przemyslawpitus.mamyklocga.domain.game.rateChallengeUseCase.RateChallengeUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.rateGuessUseCase.RateGuessUseCase
 import pl.przemyslawpitus.mamyklocga.domain.user.UserId
 import pl.przemyslawpitus.mamyklocga.domain.game.startGameUseCase.StartGameUseCase
@@ -24,6 +26,7 @@ class GameEndpoint(
     private val startGameUseCase: StartGameUseCase,
     private val startRoundUseCase: StartRoundUseCase,
     private val rateGuessUseCase: RateGuessUseCase,
+    private val rateChallengeUseCase: RateChallengeUseCase,
     private val nextRoundUseCase: NextRoundUseCase,
     private val getPointsUseCase: GetPointsUseCase,
     private val endGameUseCase: EndGameUseCase,
@@ -73,27 +76,47 @@ class GameEndpoint(
         return ResponseEntity.ok().build<Unit>()
     }
 
-    @PostMapping("/{roomCode}/rate-guess/{rate}")
+    @PostMapping("/{roomCode}/guess")
     fun rateGuess(
         @CookieValue userId: String,
         @PathVariable roomCode: String,
-        @PathVariable rate: String,
+        @RequestBody request: GuessRequest,
     ): ResponseEntity<*> {
         logger.info("Rate guess in room roomCode: $roomCode, userId: $userId")
+
+        val room = rateGuessUseCase.rateGuess(
+            roomCode = roomCode,
+            userId = UserId(userId),
+            ratedUserId = request.ratedUserId?.let { UserId(it) },
+            hasGuessedCorrectly = request.hasGuessedCorrectly,
+        )
+
+        return ResponseEntity.ok().body(room.toGetRoomResponse()) // TODO Return nothing - client is watching the room
+    }
+
+    @PostMapping("/{roomCode}/challenge/{ratedUserId}/{rate}")
+    fun rateChallenge(
+        @CookieValue userId: String,
+        @PathVariable roomCode: String,
+        @PathVariable ratedUserId: String,
+        @PathVariable rate: String,
+    ): ResponseEntity<*> {
+        logger.info("Rate challenge in room roomCode: $roomCode, userId: $userId")
 
         if (rate !in listOf("yes", "no")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build<Unit>()
         }
 
-        val hasGuesserGuessedCorrectly = rate == "yes"
+        val hasPassedChallenge = rate == "yes"
 
-        val room = rateGuessUseCase.rateGuess(
+        rateChallengeUseCase.rateChallenge(
             roomCode = roomCode,
             userId = UserId(userId),
-            hasGuesserGuessedCorrectly = hasGuesserGuessedCorrectly,
+            ratedUserId = UserId(ratedUserId),
+            hasPassedChallenge = hasPassedChallenge,
         )
 
-        return ResponseEntity.ok().body(room.toGetRoomResponse()) // TODO Return nothing - client is watching the room
+        return ResponseEntity.ok().build<Unit>()
     }
 
     @PostMapping("/{roomCode}/end-game")
@@ -149,3 +172,7 @@ private fun List<UserPoints>.toResponse() = PunctuationResponse(
     }
 )
 
+data class GuessRequest(
+    val ratedUserId: String?,
+    val hasGuessedCorrectly: Boolean,
+)

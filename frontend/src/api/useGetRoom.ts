@@ -15,6 +15,7 @@ export interface RoomResponse {
 }
 
 interface User {
+  userId: string;
   username: string;
 }
 
@@ -39,7 +40,7 @@ export interface Round {
   hasRatedStolenGuess: boolean;
 }
 
-interface RoundUser {
+export interface RoundUser {
   userId: string;
   username: string;
   role: 'GUESSER' | 'BUILDER';

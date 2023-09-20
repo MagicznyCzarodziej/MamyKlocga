@@ -20,7 +20,7 @@ export const RoomLobby = (props: Props) => {
       <UsersList room={room} />
       <div className={`mt-12`}>
       {room.isRoomOwner &&
-          <div className={`px-12`}>
+          <div className={`px-8`}>
           <Button
               onClick={() => {
                 startGameMutation.mutate(room.code);

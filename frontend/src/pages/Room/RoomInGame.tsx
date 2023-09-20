@@ -1,9 +1,7 @@
-import { Button } from '../../components/Button/Button';
 import { RoomResponse } from '../../api/useGetRoom';
-import { useStartRound } from '../../api/useStartRound';
 import { RoundInProgress } from './Round/RoundInProgress';
 import { RoundWaitingToStart } from './Round/RoundWaitingToStart';
-import { RoundEnded } from './Round/RoundEnded';
+import { RoundEnded } from './Round/RoundEnded/RoundEnded';
 
 interface Props {
   room: RoomResponse;

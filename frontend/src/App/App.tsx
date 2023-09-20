@@ -22,7 +22,7 @@ export const App = () => {
     console.log('Hello:', helloMutation.data);
 
     user.setUsername(helloMutation.data.username);
-    user.setHasUserId(true);
+    user.setUserId(helloMutation.data.userId);
   }, [helloMutation.isSuccess]);
 
   const AuthenticatedRoute = ({ element }: { element: JSX.Element }) => {

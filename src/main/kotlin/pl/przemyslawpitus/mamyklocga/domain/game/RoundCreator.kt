@@ -20,7 +20,7 @@ class RoundCreator(
             guesser = guesser,
             builds = builds,
             challenge = challengeProvider.getRandomChallenge(),
-            timeTotal = 5.toDuration(DurationUnit.MINUTES),
+            timeTotal = 1.toDuration(DurationUnit.MINUTES),
             startedAt = null,
             isEnded = false
         )

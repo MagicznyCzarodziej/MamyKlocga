@@ -21,7 +21,12 @@ export const RoundWaitingToStart = (props: Props) => {
       {round.role == 'BUILDER'
         ? <WordsList words={game.words} />
         : <div className={`text-center text-4xl mb-12`}>Zgadujesz!</div>}
-      {room.isRoomOwner && <div className={`mt-8`}><StartRoundButton roomCode={room.code} /></div>}
+      <div className={`mt-8`}>
+        {room.isRoomOwner
+          ? <StartRoundButton roomCode={room.code} />
+          : <div className={`text-center text-xl`}>Zaczekaj na rozpoczącie rundy</div>
+        }
+      </div>
     </div>;
   };
 

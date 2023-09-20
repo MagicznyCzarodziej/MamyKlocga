@@ -126,6 +126,7 @@ fun UserRoom.toGetRoomResponse() = GetRoomResponse(
 )
 
 private fun User.toGetRoomUser() = GetRoomResponse.User(
+    userId = this.userId.value,
     username = this.requiredUsername,
 )
 

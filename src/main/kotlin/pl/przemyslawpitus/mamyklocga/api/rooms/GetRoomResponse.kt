@@ -9,6 +9,7 @@ data class GetRoomResponse(
     val game: Game?,
 ) {
     data class User(
+        val userId: String,
         val username: String,
     )
 

@@ -1,15 +1,15 @@
 import { createContext, FunctionComponent, ReactNode, useState } from 'react';
 
 interface UserContextI {
-  hasUserId: boolean;
-  setHasUserId: (hasUserId: boolean) => void;
+  userId: string | null;
+  setUserId: (userId: string) => void;
   username: string | null;
   setUsername: (username: string | null) => void;
 }
 
 const defaultValue: UserContextI = {
-  hasUserId: false,
-  setHasUserId: () => void 0,
+  userId: null,
+  setUserId: () => void 0,
   username: null,
   setUsername: () => void 0
 };
@@ -21,7 +21,7 @@ interface Props {
 }
 
 export const UserProvider: FunctionComponent<Props> = ({ children }) => {
-  const [hasUserId, setHasUserId] = useState(Boolean(localStorage.getItem('hasUserId')));
+  const [userId, setUserId] = useState(localStorage.getItem('userId'));
   const [username, setUsername] = useState<string | null>(localStorage.getItem('username'));
 
   const saveUsername = (username: string | null) => {
@@ -33,9 +33,18 @@ export const UserProvider: FunctionComponent<Props> = ({ children }) => {
     }
   };
 
+  const saveUserId = (userId: string | null) => {
+    setUserId(userId);
+    if (username === null) {
+      localStorage.removeItem('userId');
+    } else {
+      localStorage.setItem('userId', userId!!);
+    }
+  };
+
   return <UserContext.Provider value={{
-    hasUserId,
-    setHasUserId,
+    userId,
+    setUserId: saveUserId,
     username,
     setUsername: saveUsername,
   }}>
