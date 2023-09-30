@@ -51,7 +51,3 @@ export const App = () => {
     </Routes>
   );
 };
-
-const Loading = () => {
-  return <div>Ładowanie</div>;
-};

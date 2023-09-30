@@ -43,23 +43,21 @@ export const UserChallengeRow = (props: UserChallengeProps) => {
 
   const ChallengePassed = <div
     className={`p-3 bg-green-400 text-white text-center`}
-    onClick={() => {
-      rateChallenge(false);
-    }}
   >
     <CheckBoxOutlined />
   </div>;
   const ChallengeNotPassed = <div
     className={`p-3 bg-gray-200 text-center`}
-    onClick={() => {
-      rateChallenge(true);
-    }}
   >
     <CheckBoxOutlineBlank />
   </div>;
 
   return <div
-    className={clsx({ 'bg-green-100': user.hasPassedChallenge }, `flex justify-between items-center mb-2`)}>
+    className={clsx({ 'bg-green-100': user.hasPassedChallenge }, `flex justify-between items-center mb-2`)}
+    onClick={() => {
+      rateChallenge(!user.hasPassedChallenge);
+    }}
+  >
     <div className={`text-xl pl-4`}>{user.username}</div>
     {user.hasPassedChallenge ? ChallengePassed : ChallengeNotPassed}
   </div>;

@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useGetRoom } from '../../api/useGetRoom';
 import { useParams } from 'react-router-dom';
 import { RoomLobby } from './RoomLobby/RoomLobby';
 import { RoomInGame } from './RoomInGame';
 import { useWatchRoom } from '../../api/useWatchRoom';
-import { RoomPunctuation } from './RoomPunctuation';
+import { RoomScoring } from './RoomScoring';
 
 export const Room = () => {
   const { roomCode } = useParams();
@@ -22,9 +22,13 @@ export const Room = () => {
     }
 
     case 'GAME_ENDED': {
-      return <RoomPunctuation room={roomQuery.data} />
+      return <RoomScoring room={roomQuery.data} />
     }
   }
 
-  return <div>Ładowanie</div>;
+  return <div
+    className={`text-2xl text-center mt-12`}
+  >
+    Ładowanie...
+  </div>;
 };

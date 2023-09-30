@@ -48,7 +48,7 @@ class RateGuessUseCase(
 
         val updatedRoom = if (ratedUser == null) {
             logger.info("no one guessed")
-            room.rateNoOneGuessed(userId)
+            room.setAllRated(userId)
         } else {
             if (ratedUser !in room.users) {
                 throw RuntimeException("Rated user is not in the room")
@@ -60,14 +60,13 @@ class RateGuessUseCase(
 
             room
                 .letIf(hasGuessedCorrectly) {
-                    logger.info("${ratedUser.requiredUsername} guessed correctly")
-                    it.userBuildLens(userId).correctAnswerBy.set(it, ratedUser)
+                    it.userBuildLens(userId)
+                        .correctAnswerBy.set(it, ratedUser)
+                        .setAllRated(userId)
                 }.letIf(ratedUser == guesser) {
-                    logger.info("guesser rated")
                     it.userBuildLens(userId).hasRatedGuesserGuess.set(it, true)
                 }.letIf(ratedUser != guesser) {
-                    logger.info("not guesser rated")
-                    it.userBuildLens(userId).hasRatedStolenGuess.set(it, true)
+                    it.setAllRated(userId)
                 }
         }
 
@@ -77,7 +76,7 @@ class RateGuessUseCase(
         return roomToUserRoomMapper.mapRoomToUserRoom(savedRoom, user)
     }
 
-    private fun Room.rateNoOneGuessed(userId: UserId): Room {
+    private fun Room.setAllRated(userId: UserId): Room {
         val room = this
         return copy {
             room.userBuildLens(userId).hasRatedGuesserGuess set true
