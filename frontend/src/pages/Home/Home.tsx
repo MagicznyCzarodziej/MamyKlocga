@@ -46,7 +46,7 @@ export const Home = () => {
         setUsernameMutation.mutate(username, {
           onSuccess: (data) => {
             user.setUsername(data.username);
-            createRoomMutation.mutate("nazwa", {
+            createRoomMutation.mutate(data.username.toUpperCase(), {
               onSuccess: (room) => {
                 navigate(`/rooms/${room.code}`)
               }

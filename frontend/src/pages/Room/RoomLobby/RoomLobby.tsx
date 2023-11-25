@@ -22,6 +22,7 @@ export const RoomLobby = (props: Props) => {
       {room.isRoomOwner &&
           <div className={`px-8`}>
           <Button
+              disabled={room.users.length < 2}
               onClick={() => {
                 startGameMutation.mutate(room.code);
               }}
