@@ -3,11 +3,13 @@ import { createContext, FunctionComponent, ReactNode, useEffect, useState } from
 interface UsedWordsContextI {
   usedWords: string[];
   toggleWord: (word: string) => void;
+  resetUsedWords: () => void;
 }
 
 const defaultValue: UsedWordsContextI = {
   usedWords: [],
   toggleWord: () => void 0,
+  resetUsedWords: () => void 0,
 };
 
 export const UsedWordsContext = createContext<UsedWordsContextI>(defaultValue);
@@ -34,6 +36,10 @@ export const UsedWordsProvider: FunctionComponent<Props> = ({ children }) => {
     localStorage.setItem('usedWords', JSON.stringify(usedWords));
   }, [usedWords]);
 
+  const resetUsedWords = () => {
+    setUsedWords([])
+  }
+
   const toggleWord = (word: string) => {
     const isWordUsed = usedWords.includes(word);
 
@@ -47,6 +53,7 @@ export const UsedWordsProvider: FunctionComponent<Props> = ({ children }) => {
   return <UsedWordsContext.Provider value={{
     usedWords: usedWords,
     toggleWord: toggleWord,
+    resetUsedWords: resetUsedWords,
   }}>
     {children}
   </UsedWordsContext.Provider>;
