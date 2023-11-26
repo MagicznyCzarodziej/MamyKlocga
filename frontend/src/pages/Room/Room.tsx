@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import { useGetRoom } from '../../api/useGetRoom';
 import { useParams } from 'react-router-dom';
 import { RoomLobby } from './RoomLobby/RoomLobby';
