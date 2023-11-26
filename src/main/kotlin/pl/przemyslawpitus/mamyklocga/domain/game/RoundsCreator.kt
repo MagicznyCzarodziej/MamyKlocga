@@ -8,15 +8,16 @@ class RoundsCreator(
     private val challengeProvider: ChallengeProvider,
 ) {
     fun createRounds(users: Set<User>): List<Round> {
+        val shuffledUsers = users.shuffled()
+
         // Double rounds if no more than 3 players
         val roundsToCreate = if (users.size > 3) {
-            users
+            shuffledUsers
         } else {
-            listOf(users, users).flatten()
+            listOf(shuffledUsers, shuffledUsers).flatten()
         }
 
         return roundsToCreate
-            .shuffled()
             .mapIndexed { index, user ->
                 createRound(
                     guesser = user,

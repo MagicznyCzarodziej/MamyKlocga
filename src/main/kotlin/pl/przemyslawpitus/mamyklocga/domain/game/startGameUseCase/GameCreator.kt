@@ -22,7 +22,6 @@ class GameCreator(
         )
     }
 
-
     private fun getWordsPerUser(users: Set<User>): Map<UserId, List<Word>> {
         val words = wordsProvider.getWords()
             .shuffled()

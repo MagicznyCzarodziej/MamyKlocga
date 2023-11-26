@@ -24,7 +24,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.arrow-kt:arrow-optics:1.2.0")
     ksp("io.arrow-kt:arrow-optics-ksp-plugin:1.2.0")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:5.8.0")
 }
 
 tasks.withType<KotlinCompile> {
