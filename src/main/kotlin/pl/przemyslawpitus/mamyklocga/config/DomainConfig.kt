@@ -9,7 +9,7 @@ import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomStatusController
 import pl.przemyslawpitus.mamyklocga.domain.game.endRoundsUseCase.EndRoundsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.ChallengeProvider
 import pl.przemyslawpitus.mamyklocga.domain.game.PointsCounter
-import pl.przemyslawpitus.mamyklocga.domain.game.RoundCreator
+import pl.przemyslawpitus.mamyklocga.domain.game.RoundsCreator
 import pl.przemyslawpitus.mamyklocga.domain.game.endGameUseCase.EndGameUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.getPointsUseCase.GetPointsUseCase
 import pl.przemyslawpitus.mamyklocga.domain.game.nextRoundUseCase.NextRoundUseCase
@@ -148,16 +148,16 @@ class DomainConfig {
     @Bean
     fun gameCreator(
         wordsProvider: WordsProvider,
-        roundCreator: RoundCreator,
+        roundsCreator: RoundsCreator,
     ) = GameCreator(
         wordsProvider = wordsProvider,
-        roundCreator = roundCreator,
+        roundsCreator = roundsCreator,
     )
 
     @Bean
     fun roundCreator(
         challengeProvider: ChallengeProvider
-    ) = RoundCreator(
+    ) = RoundsCreator(
         challengeProvider = challengeProvider
     )
 
@@ -209,11 +209,9 @@ class DomainConfig {
     fun nextRoundUseCase(
         roomRepository: RoomRepository,
         roomWatchingManager: RoomWatchingManager,
-        roundCreator: RoundCreator,
     ) = NextRoundUseCase(
         roomRepository = roomRepository,
         roomWatchingManager = roomWatchingManager,
-        roundCreator = roundCreator,
     )
 
     @Bean

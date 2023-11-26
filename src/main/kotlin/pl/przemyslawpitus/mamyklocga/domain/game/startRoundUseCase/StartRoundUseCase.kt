@@ -1,5 +1,6 @@
 package pl.przemyslawpitus.mamyklocga.domain.game.startRoundUseCase
 
+import pl.przemyslawpitus.mamyklocga.domain.game.Game
 import pl.przemyslawpitus.mamyklocga.domain.rooms.Room
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomRepository
 import pl.przemyslawpitus.mamyklocga.domain.user.UserId
@@ -34,11 +35,19 @@ private fun Room.startCurrentRound(): Room {
     if (game.currentRound.isEnded) throw RuntimeException("Cannot start ended round, roomCode: ${this.code}")
 
     return this.copy(
-        game = game.copy(
-            currentRound = game.currentRound.copy(
-                startedAt = Instant.now(),
-            )
-        ),
+        game = game.startCurrentRound(),
         updatedAt = Instant.now(),
+    )
+}
+
+private fun Game.startCurrentRound(): Game {
+    return copy(
+        rounds = rounds.mapIndexed { index, round ->
+            if (index == currentRoundIndex) {
+                round.copy(startedAt = Instant.now())
+            } else {
+                round.copy()
+            }
+        }
     )
 }

@@ -9,16 +9,19 @@ import kotlin.time.Duration
 @optics
 data class Game(
     val roundsTotal: Int,
-    val currentRound: Round,
-    val pastRounds: List<Round>,
+    val rounds: List<Round>,
+    val currentRoundIndex: Int = 0,
     val wordsPerUser: Map<UserId, List<Word>>,
 ) {
+    val currentRound: Round
+        get() = rounds[currentRoundIndex]
+
     companion object
 }
 
 @optics
 data class Round(
-    val roundNumber: Int,
+    val roundNumber: Int, // Indexed from 1
     val guesser: User,
     val builds: List<Build>,
     val challenge: Challenge,

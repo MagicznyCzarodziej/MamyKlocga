@@ -32,18 +32,9 @@ class EndGameUseCase(
     }
 }
 
-
 private fun Room.endGame(): Room {
-    val game = checkNotNull(this.game) { "Game should not be null when trying to end active round" }
-
     return this.copy(
         state = RoomState.GAME_ENDED,
-        game = game.copy(
-            currentRound = game.currentRound.copy(
-                isEnded = true,
-            )
-            // TODO: Make currentRound nullable and set it to null?
-        ),
         updatedAt = Instant.now(),
     )
 }

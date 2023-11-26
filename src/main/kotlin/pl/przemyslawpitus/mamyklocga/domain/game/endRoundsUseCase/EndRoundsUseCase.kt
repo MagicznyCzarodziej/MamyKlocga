@@ -1,10 +1,10 @@
 package pl.przemyslawpitus.mamyklocga.domain.game.endRoundsUseCase
 
 import pl.przemyslawpitus.mamyklocga.WithLogger
+import pl.przemyslawpitus.mamyklocga.domain.game.Game
 import pl.przemyslawpitus.mamyklocga.domain.rooms.Room
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomRepository
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomChangedEvent
-import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomState
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomWatchingManager
 import java.time.Instant
 import kotlin.time.toJavaDuration
@@ -44,11 +44,19 @@ private fun Room.endCurrentRound(): Room {
     val game = checkNotNull(this.game) { "Game should not be null when trying to end active round" }
 
     return this.copy(
-        game = game.copy(
-            currentRound = game.currentRound.copy(
-                isEnded = true,
-            )
-        ),
+        game = game.endCurrentRound(),
         updatedAt = Instant.now(),
+    )
+}
+
+private fun Game.endCurrentRound(): Game {
+    return copy(
+        rounds = rounds.mapIndexed { index, round ->
+            if (index == currentRoundIndex) {
+                round.copy(isEnded = true)
+            } else {
+                round.copy()
+            }
+        }
     )
 }

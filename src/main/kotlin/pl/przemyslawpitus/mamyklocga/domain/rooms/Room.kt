@@ -8,7 +8,7 @@ import pl.przemyslawpitus.mamyklocga.domain.game.Build
 import pl.przemyslawpitus.mamyklocga.domain.user.User
 import pl.przemyslawpitus.mamyklocga.domain.game.Game
 import pl.przemyslawpitus.mamyklocga.domain.game.builds
-import pl.przemyslawpitus.mamyklocga.domain.game.currentRound
+import pl.przemyslawpitus.mamyklocga.domain.game.rounds
 import pl.przemyslawpitus.mamyklocga.domain.user.UserId
 import java.time.Instant
 
@@ -28,7 +28,9 @@ data class Room(
 ) {
     fun userBuildLens(userId: UserId): Optional<Room, Build> {
         val buildIndex = checkNotNull(this.game?.currentRound?.builds?.indexOfFirst { it.builder.userId == userId })
-        return Room.game.currentRound.builds.index(Index.list(), buildIndex)
+        val currentRoundIndex = checkNotNull(this.game?.currentRoundIndex)
+
+        return Room.game.rounds.index(Index.list(), currentRoundIndex).builds.index(Index.list(), buildIndex)
     }
 
     companion object

@@ -4,14 +4,30 @@ import pl.przemyslawpitus.mamyklocga.domain.user.User
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-class RoundCreator(
+class RoundsCreator(
     private val challengeProvider: ChallengeProvider,
 ) {
-    fun createRound(users: Set<User>, roundNumber: Int = 1): Round {
-        // TODO: Cycle users in next rounds instead of shuffling
-        val shuffledUsers = users.shuffled()
-        val guesser = shuffledUsers.first()
-        val builders = shuffledUsers.drop(1)
+    fun createRounds(users: Set<User>): List<Round> {
+        val rounds = users
+            .shuffled()
+            .mapIndexed { index, user ->
+                createRound(
+                    guesser = user,
+                    users = users,
+                    roundNumber = index + 1,
+                )
+            }
+
+        // Double rounds if less than 3 players
+        return if (users.size > 3) {
+            rounds
+        } else {
+            listOf(rounds, rounds).flatten()
+        }
+    }
+
+    private fun createRound(guesser: User, users: Set<User>, roundNumber: Int): Round {
+        val builders = users.filterNot { it == guesser }
 
         val builds = createBuilds(builders = builders)
 
@@ -22,7 +38,7 @@ class RoundCreator(
             challenge = challengeProvider.getRandomChallenge(),
             timeTotal = 1.toDuration(DurationUnit.MINUTES),
             startedAt = null,
-            isEnded = false
+            isEnded = false,
         )
     }
 

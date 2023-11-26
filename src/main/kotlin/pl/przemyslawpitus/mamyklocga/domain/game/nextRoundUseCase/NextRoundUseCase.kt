@@ -1,6 +1,5 @@
 package pl.przemyslawpitus.mamyklocga.domain.game.nextRoundUseCase
 
-import pl.przemyslawpitus.mamyklocga.domain.game.RoundCreator
 import pl.przemyslawpitus.mamyklocga.domain.rooms.Room
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomChangedEvent
 import pl.przemyslawpitus.mamyklocga.domain.rooms.RoomRepository
@@ -11,7 +10,6 @@ import java.time.Instant
 class NextRoundUseCase(
     private val roomRepository: RoomRepository,
     private val roomWatchingManager: RoomWatchingManager,
-    private val roundCreator: RoundCreator,
 ) {
     fun nextRound(roomCode: String, userId: UserId) {
         val room = roomRepository.getByCode(roomCode = roomCode)
@@ -43,11 +41,7 @@ class NextRoundUseCase(
 
         return this.copy(
             game = game.copy(
-                pastRounds = game.pastRounds + game.currentRound,
-                currentRound = roundCreator.createRound(
-                    users = this.users,
-                    roundNumber = game.currentRound.roundNumber + 1,
-                )
+                currentRoundIndex = game.currentRoundIndex + 1,
             ),
             updatedAt = Instant.now(),
         )
