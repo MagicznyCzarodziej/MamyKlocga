@@ -17,11 +17,7 @@ export const RoundEnded = (props: Props) => {
 
   const getRoleDependentContent = () => {
     if (round.role == 'BUILDER') {
-      if (game.currentRound.roundNumber < game.roundsTotal)
-        return <RateGuess room={room} />
-      else {
-        return null
-      }
+      return <RateGuess room={room} />
     }
 
     return <UsersChallenge round={round} roomCode={room.code} />;

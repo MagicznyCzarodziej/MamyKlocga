@@ -12,7 +12,8 @@ export const RateGuess = (props: Props) => {
 
   const me = useContext(UserContext);
 
-  const round = room.game!.currentRound!;
+  const game = room.game!
+  const round = game.currentRound!;
 
   const rateGuessMutation = useRateGuess();
 
@@ -91,9 +92,13 @@ export const RateGuess = (props: Props) => {
     </div>;
   }
 
-  return <div
-    className={`mt-auto text-2xl py-3 w-full text-center`}
-  >
-    Zaczekaj na następną rundę
-  </div>;
+  if (game.currentRound.roundNumber < game.roundsTotal) {
+    return <div
+      className={`mt-auto text-2xl py-3 w-full text-center`}
+    >
+      Zaczekaj na następną rundę
+    </div>;
+  }
+
+  return null
 };

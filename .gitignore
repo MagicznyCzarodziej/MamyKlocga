@@ -38,3 +38,5 @@ out/
 
 ### Secrets
 certificates/
+
+logs/
