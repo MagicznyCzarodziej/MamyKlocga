@@ -1,7 +1,6 @@
 import {
   CheckBoxOutlineBlankOutlined,
   CheckBoxOutlined,
-  Visibility,
   VisibilityOffOutlined
 } from '@mui/icons-material';
 import { useContext, useState } from 'react';

@@ -23,13 +23,16 @@ export const Home = () => {
     <div className="grid justify-stretch text-center p-12">
       <div className="text-4xl">MamyKloc.ga</div>
       <div className="my-12">
-        <input placeholder="Imię"
-               className="border-b border-b-black text-center w-full text-2xl py-2"
-               value={username ?? ''}
-               onChange={(event) => {
-                 setUsername(event.target.value);
-               }} />
+        <input
+          placeholder="Imię"
+          className="border-b border-b-black text-center w-full text-2xl py-2"
+          value={username ?? ''}
+          onChange={(event) => {
+            setUsername(event.target.value);
+          }}
+        />
       </div>
+
       <Button onClick={() => {
         if (username == null) return;
         setUsernameMutation.mutate(username, {
@@ -38,10 +41,11 @@ export const Home = () => {
             navigate('/rooms');
           }
         });
-
       }}>Dołącz do gry</Button>
-      <div className="my-3 text-xl font-light text-gray-500">lub</div>
-      <Button light onClick={() => {
+
+      <div className="h-6" />
+
+      <Button variant="text" onClick={() => {
         if (username == null) return;
         setUsernameMutation.mutate(username, {
           onSuccess: (data) => {
@@ -51,8 +55,8 @@ export const Home = () => {
                 navigate(`/rooms/${room.code}`)
               }
             })
-          }})
-
+          }
+        })
       }}>Stwórz grę</Button>
     </div>);
 };

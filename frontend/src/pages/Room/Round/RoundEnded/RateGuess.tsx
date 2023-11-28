@@ -2,6 +2,7 @@ import { RoomResponse } from '../../../../api/useGetRoom';
 import { useRateGuess } from '../../../../api/useRateGuess';
 import { useContext } from 'react';
 import { UserContext } from '../../../../context/UserContext';
+import { clsx } from 'clsx';
 
 interface Props {
   room: RoomResponse;
@@ -25,14 +26,15 @@ export const RateGuess = (props: Props) => {
 
   if (!round.hasRatedGuesserGuess) {
     return <div>
-      <div
-        className={`text-2xl text-center mt-4 mb-4 pt-12 border-t-2`}
-      >
+      <div className={`text-2xl text-center mt-4 mb-4 pt-12 border-t-2`}>
         Czy zgadujący trafił?
       </div>
       <div className={`flex gap-4`}>
         <div
-          className={`bg-green-400 text-white text-2xl py-3 w-full text-center`}
+          className={clsx(
+            'text-white text-2xl py-3 w-full text-center',
+            { "bg-gray-300": rateGuessMutation.isLoading, 'bg-green-400 ': !rateGuessMutation.isLoading }
+          )}
           onClick={() => {
             rateGuess(round.guesser.userId, true);
           }}
@@ -40,7 +42,10 @@ export const RateGuess = (props: Props) => {
           TAK
         </div>
         <div
-          className={`bg-red-400 text-white text-2xl py-3 w-full text-center`}
+          className={clsx(
+            `text-white text-2xl py-3 w-full text-center`,
+            { "bg-gray-300": rateGuessMutation.isLoading, 'bg-red-400 ': !rateGuessMutation.isLoading }
+          )}
           onClick={() => {
             rateGuess(round.guesser.userId, false);
           }}
@@ -72,7 +77,10 @@ export const RateGuess = (props: Props) => {
               {user.username}
             </div>
             <div
-              className={`bg-green-400 text-white text-2xl py-3 w-full text-center`}
+              className={clsx(
+                `bg-green-400 text-white text-2xl py-3 w-full text-center`,
+                { "bg-gray-300": rateGuessMutation.isLoading, 'bg-green-400 ': !rateGuessMutation.isLoading }
+              )}
               onClick={() => {
                 rateGuess(user.userId, true);
               }}
@@ -81,7 +89,10 @@ export const RateGuess = (props: Props) => {
             </div>
           </div>)}
         <div
-          className={`bg-red-400 text-white text-2xl py-3 mt-4 w-full text-center`}
+          className={clsx(
+            `text-white text-2xl py-3 mt-4 w-full text-center`,
+            { "bg-gray-300": rateGuessMutation.isLoading, 'bg-red-400 ': !rateGuessMutation.isLoading }
+          )}
           onClick={() => {
             rateGuess(null, false);
           }}
@@ -93,9 +104,7 @@ export const RateGuess = (props: Props) => {
   }
 
   if (game.currentRound.roundNumber < game.roundsTotal) {
-    return <div
-      className={`mt-auto text-2xl py-3 w-full text-center`}
-    >
+    return <div className={`mt-auto text-2xl py-3 w-full text-center`}>
       Zaczekaj na następną rundę
     </div>;
   }

@@ -1,5 +1,6 @@
 import { RoomResponse } from '../../../api/useGetRoom';
-import { useEffect, useState } from 'react';
+import { ShareOutlined, TagOutlined } from '@mui/icons-material';
+import { useShareRoom } from '../../../hooks/useShareRoom';
 
 interface Props {
   room: RoomResponse;
@@ -8,37 +9,18 @@ interface Props {
 export const LobbyHeader = (props: Props) => {
   const { room } = props;
 
-  const [copied, setCopied] = useState(false);
+  const { share, copied } = useShareRoom()
 
-  useEffect(() => {
-    if (copied)
-      window.setTimeout(() => {
-        setCopied(false);
-      }, 3000);
-  }, [copied]);
-
-  return <div className={`bg-gray-100 flex justify-between mx-8 p-4`}>
-    <div>#{room.code}</div>
+  return <div className={`bg-gray-100 flex justify-between p-4`}>
+    <div className={`text-xl`}><TagOutlined className={`align-middle`} /><span
+      className={`align-middle`}>{room.code}</span></div>
     <div
       className={`text-right`}
       onClick={() => {
-        const link = window.document.location.href;
-        const shareData = {
-          title: "Dołącz do pokoju w MamyKlocga",
-          url: link
-        }
-
-        if (!navigator.share || !navigator.canShare(shareData)) {
-          window.navigator.clipboard.writeText(link).then(() => {
-            setCopied(true);
-          });
-          return;
-        }
-
-        navigator.share(shareData).then() // Only over HTTPS
+        share(window.document.location.href)
       }}
     >
-      {copied ? "Skopiowano link do pokoju!" : "Udostępnij link do pokoju"}
+      {copied ? "Skopiowano!" : <>Zaproś <ShareOutlined /></>}
     </div>
   </div>;
 };

@@ -23,12 +23,16 @@ export const RoundEnded = (props: Props) => {
     return <UsersChallenge round={round} roomCode={room.code} />;
   };
 
-  return <div className={`p-12 flex flex-col h-full`}>
+  return <div className={`flex flex-col h-full`}>
     <RoundHeader game={game} />
-    <div className={`text-center text-2xl mt-8`}>Koniec rundy!</div>
-    <Challenge challenge={round.challenge} />
-    {getRoleDependentContent()}
-    <div className={`mt-auto`}><BottomButton room={room} /></div>
+    <div className={`p-12 flex flex-col h-full`}>
+      <div className={`text-center text-3xl mt-2 mb-4`}>Koniec rundy!</div>
+      <Challenge challenge={round.challenge} />
+      {getRoleDependentContent()}
+      <div className={`mt-auto`}>
+        <BottomButton room={room} />
+      </div>
+    </div>
   </div>;
 };
 

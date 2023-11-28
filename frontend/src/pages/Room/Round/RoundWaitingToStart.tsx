@@ -24,16 +24,18 @@ export const RoundWaitingToStart = (props: Props) => {
       <div className={`mt-8`}>
         {room.isRoomOwner
           ? <StartRoundButton roomCode={room.code} />
-          : <div className={`text-center text-xl`}>Zaczekaj na rozpoczącie rundy</div>
+          : <div className={`text-center text-xl`}>Zaczekaj na rozpoczęcie rundy</div>
         }
       </div>
     </div>;
   };
 
-  return <div className={`p-12`}>
+  return <div className={`flex flex-col h-full`}>
     <RoundHeader game={game} />
-    <Challenge challenge={round.challenge} />
-    {getRoleDependentContent()}
+    <div className={`p-12`}>
+      <Challenge challenge={round.challenge} />
+      {getRoleDependentContent()}
+    </div>
   </div>;
 };
 

@@ -5,6 +5,7 @@ import { LobbyHeader } from './LobbyHeader';
 import { UsersList } from './UsersList';
 import { useContext, useEffect } from "react";
 import { UsedWordsContext } from "../../../context/UsedWordsContext";
+import { useShareRoom } from '../../../hooks/useShareRoom';
 
 interface Props {
   room: RoomResponse;
@@ -15,27 +16,39 @@ export const RoomLobby = (props: Props) => {
 
   const startGameMutation = useStartGame();
   const { resetUsedWords } = useContext(UsedWordsContext);
+  const { share, copied } = useShareRoom()
 
   useEffect(() => {
     resetUsedWords()
   }, []);
 
   return (
-    <div className={`py-8`}>
+    <div>
       <LobbyHeader room={room} />
-      <div className={`text-center text-xl p-6`}>Zaczekaj na rozpoczęcie gry</div>
+      {room.isRoomOwner
+        ? <div className={`h-6`} />
+        : <div className={`text-center text-xl p-6`}>Zaczekaj na rozpoczęcie gry</div>
+      }
       <UsersList room={room} />
       <div className={`mt-12`}>
         {room.isRoomOwner &&
           <div className={`px-8`}>
-            <Button
-              disabled={room.users.length < 2}
-              onClick={() => {
-                startGameMutation.mutate(room.code);
-              }}
-            >
-              Rozpocznij grę
-            </Button>
+            {room.users.length < 2
+              ? <Button
+                onClick={() => {
+                  share(window.document.location.href)
+                }}
+              >
+                {copied ? 'Skopiowano!' : 'Zaproś graczy'}
+              </Button>
+              : <Button
+                onClick={() => {
+                  startGameMutation.mutate(room.code);
+                }}
+              >
+                Rozpocznij grę
+              </Button>
+            }
           </div>
         }
       </div>
