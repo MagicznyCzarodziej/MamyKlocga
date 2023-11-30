@@ -1,5 +1,11 @@
 import { Home } from '../pages/Home/Home';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Navigate,
+  Route,
+  RouterProvider,
+} from 'react-router-dom';
 import React, { useContext, useEffect } from 'react';
 import { useHello } from '../api/useHello';
 import { Room } from '../pages/Room/Room';
@@ -33,8 +39,8 @@ export const App = () => {
     return <Navigate to="/" />;
   };
 
-  return (
-    <Routes>
+  const router = createBrowserRouter(createRoutesFromElements(
+    <>
       <Route path="/" element={<Home />} />
       <Route
         path="/rooms"
@@ -48,6 +54,10 @@ export const App = () => {
           <AuthenticatedRoute element={<Room />} />
         }
       />
-    </Routes>
+    </>
+  ))
+
+  return (
+    <RouterProvider router={router} />
   );
 };

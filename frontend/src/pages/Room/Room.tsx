@@ -1,15 +1,28 @@
 import { useGetRoom } from '../../api/useGetRoom';
-import { useParams } from 'react-router-dom';
+import { useParams, unstable_usePrompt } from 'react-router-dom';
 import { RoomLobby } from './RoomLobby/RoomLobby';
 import { RoomInGame } from './RoomInGame';
 import { useWatchRoom } from '../../api/useWatchRoom';
 import { RoomScoring } from './RoomScoring';
+import { useEffect } from 'react';
 
 export const Room = () => {
   const { roomCode } = useParams();
 
   const roomQuery = useGetRoom(roomCode as string);
   useWatchRoom(roomCode as string)
+
+  unstable_usePrompt({
+    message: "Na pewno chcesz opuścić pokój?",
+    when: ({ currentLocation, nextLocation }) =>
+      currentLocation.pathname !== nextLocation.pathname,
+  });
+
+  useEffect(() => {
+    if (navigator.wakeLock){
+      navigator.wakeLock.request("screen").then()
+    }
+  }, []);
 
   switch (roomQuery.data?.state) {
     case 'CREATED': {
